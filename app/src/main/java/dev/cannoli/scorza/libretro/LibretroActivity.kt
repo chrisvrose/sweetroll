@@ -69,6 +69,7 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
+@Deprecated("TODO remove")
 @AndroidEntryPoint
 class LibretroActivity : ComponentActivity(), LauncherSettingsHost {
 

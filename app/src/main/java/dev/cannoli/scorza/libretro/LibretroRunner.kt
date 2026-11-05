@@ -8,7 +8,7 @@ data class SystemAvInfo(
     val fps: Double,
     val sampleRate: Int
 )
-
+@Deprecated("Remove")
 class LibretroRunner {
 
     companion object {

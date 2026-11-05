@@ -13,6 +13,7 @@ sealed interface LaunchTarget {
         val packageName: String
     ) : LaunchTarget
 
+    @Deprecated("Pending removal")
     data class Embedded(
         val corePath: String
     ) : LaunchTarget

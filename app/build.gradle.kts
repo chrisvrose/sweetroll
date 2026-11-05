@@ -40,16 +40,6 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        ndk {
-            abiFilters += listOf("arm64-v8a", "armeabi-v7a")
-        }
-
-        externalNativeBuild {
-            cmake {
-                arguments("-DANDROID_STL=c++_shared")
-            }
-        }
-
         buildConfigField("String", "BUILD_DATE", "\"${buildDate()}\"")
         buildConfigField("String", "GIT_HASH", "\"${gitCommitHash()}\"")
     }
@@ -57,13 +47,6 @@ android {
     buildFeatures {
         buildConfig = true
         prefab = true
-    }
-
-    externalNativeBuild {
-        cmake {
-            path = file("src/main/cpp/CMakeLists.txt")
-            version = "3.22.1"
-        }
     }
 
     signingConfigs {

@@ -48,7 +48,7 @@ data class GameInfo(
     val raGameId: String? = null,
     val raDetection: String? = null
 )
-
+@Deprecated("TODO Remove")
 @Composable
 fun LibretroScreen(
     glSurfaceView: android.view.View,

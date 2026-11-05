@@ -1,3 +1,4 @@
+
 package dev.cannoli.scorza.libretro
 
 import android.graphics.BitmapFactory
@@ -15,18 +16,19 @@ import java.util.concurrent.ConcurrentHashMap
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
-enum class ScalingMode(val nativeCode: Int) {
-    CORE_REPORTED(0),
-    INTEGER(1),
-    INTEGER_OVERSCALE(4),
-    ASPECT_SCREEN(2),
-    FULLSCREEN(3),
+enum class ScalingMode {
+    CORE_REPORTED,
+    INTEGER,
+    INTEGER_OVERSCALE,
+    ASPECT_SCREEN,
+    FULLSCREEN,
 }
 enum class Sharpness { SHARP, SOFT }
 enum class ScreenEffect { NONE, SHADER }
 
 private const val FPS_EMA_ALPHA = 0.05
 
+@Deprecated("Todo remove")
 class LibretroRenderer(private val runner: LibretroRunner) : GLSurfaceView.Renderer {
 
     @Volatile var paused = false

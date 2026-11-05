@@ -41,6 +41,7 @@ class RetroArchLauncher(
 ) {
     // Managed RicottaArch: structured, version-negotiated launch contract that drives the
     // shared Cannoli in-game menu.
+    @Deprecated("TODO Remove")
     fun launchRicotta(
         romFile: File,
         coreId: String,
