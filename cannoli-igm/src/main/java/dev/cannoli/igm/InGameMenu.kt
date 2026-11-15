@@ -43,7 +43,7 @@ import dev.cannoli.ui.theme.Spacing
 fun PolaroidFrame(
     thumbnail: Bitmap?,
     selectedSlotIndex: Int,
-    slotOccupied: kotlin.collections.List<Boolean>,
+    slotOccupied: List<Boolean>,
     showIndicators: Boolean = true
 ) {
     val selectedColor = PolaroidSelect
