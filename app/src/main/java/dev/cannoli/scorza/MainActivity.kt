@@ -1,15 +1,13 @@
 package dev.cannoli.scorza
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.app.ActivityOptions
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.provider.Settings
 import android.view.KeyEvent
 import android.view.MotionEvent
@@ -54,8 +52,6 @@ import dev.cannoli.scorza.input.LauncherActions
 import dev.cannoli.scorza.input.runtime.ControllerBridge
 import dev.cannoli.scorza.launcher.InstalledCoreService
 import dev.cannoli.scorza.launcher.LaunchManager
-import dev.cannoli.scorza.libretro.LibretroActivity
-import dev.cannoli.scorza.libretro.RetroAchievementsManager
 import dev.cannoli.scorza.navigation.AppNavGraph
 import dev.cannoli.scorza.navigation.LauncherScreen
 import dev.cannoli.scorza.navigation.NavigationController
@@ -69,9 +65,9 @@ import dev.cannoli.scorza.ui.viewmodel.GameListViewModel
 import dev.cannoli.scorza.ui.viewmodel.InputTesterViewModel
 import dev.cannoli.scorza.ui.viewmodel.SettingsViewModel
 import dev.cannoli.scorza.ui.viewmodel.SystemListViewModel
-import dev.cannoli.scorza.romm.sync.RomKeys
 import dev.cannoli.scorza.updater.UpdateManager
 import dev.cannoli.ui.theme.CannoliTheme
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -131,15 +127,7 @@ class MainActivity : ComponentActivity(), ActivityActions {
     private val isReady: Boolean get() = bootSequencer.state.value is BootState.Ready
 
     private var coreQueryReceiver: android.content.BroadcastReceiver? = null
-    private var loginManager: RetroAchievementsManager? = null
     private var pairingUiJob: kotlinx.coroutines.Job? = null
-    private val loginPollHandler = Handler(Looper.getMainLooper())
-    private val loginPollRunnable: Runnable = object : Runnable {
-        override fun run() {
-            loginManager?.idle()
-            if (loginManager != null) loginPollHandler.postDelayed(this, 100)
-        }
-    }
     private var coldStart = true
 
     private val storagePermissionLauncher = registerForActivityResult(
@@ -404,31 +392,23 @@ class MainActivity : ComponentActivity(), ActivityActions {
         // Re-wire the dispatcher to launcher dispatch shape on each resume. LibretroActivity
         // overwrites these callbacks with IGM-specific wiring when it runs; we restore the
         // launcher's wiring when we come back.
+        // TODO fixme
         router.wire(inputDispatcher)
         registerControllerOsd()
         menuNavigationPoller.start()
         bootSequencer.advance()
         launchState.launching = false
         val justExited = launchState.lastLaunched
-        if (justExited != null && !LibretroActivity.isRunning) {
+        if (justExited != null) {
             launchState.lastLaunched = null
         }
-        if (!LibretroActivity.isRunning) {
-            syncScheduler.start()
-            // The just-played save is uploaded by the sweep itself; force one so it runs now.
-            if (justExited != null) syncScheduler.syncNow()
-        }
+        syncScheduler.start()
+        // The just-played save is uploaded by the sweep itself; force one so it runs now.
+        if (justExited != null) syncScheduler.syncNow()
         if (!isReady) return
         if (!coldStart) overridePendingTransition(0, 0)
         coldStart = false
         hideSystemUI()
-        if (LibretroActivity.isRunning) {
-            val intent = Intent(this, LibretroActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
-            val opts = ActivityOptions.makeCustomAnimation(this, 0, 0).toBundle()
-            startActivity(intent, opts)
-            return
-        }
         settings.reload()
         settingsViewModel.get().load()
         val activeDialogState = nav.dialogState
@@ -447,6 +427,7 @@ class MainActivity : ComponentActivity(), ActivityActions {
         menuNavigationPoller.stop()
         // Cancel any in-flight stick auto-repeat so it does not keep firing dispatcher callbacks
         // after LibretroActivity has rewired them.
+        // TODO analyze and fixme
         stickAutoRepeat.stop()
         controllerBridge.onDeviceAdded = null
         controllerBridge.onDeviceRemoved = null
@@ -462,9 +443,6 @@ class MainActivity : ComponentActivity(), ActivityActions {
         controllerBridge.stop(this)
         super.onDestroy()
         unregisterCoreQueryReceiver()
-        loginPollHandler.removeCallbacks(loginPollRunnable)
-        loginManager?.destroy()
-        loginManager = null
         settings.shutdown()
         if (isReady) {
             systemListViewModel.get().close()
@@ -476,6 +454,7 @@ class MainActivity : ComponentActivity(), ActivityActions {
         return true
     }
 
+    @SuppressLint("RestrictedApi")
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
         if (event.action == KeyEvent.ACTION_DOWN) {
             dev.cannoli.scorza.util.InputLog.write(
@@ -712,28 +691,8 @@ class MainActivity : ComponentActivity(), ActivityActions {
     }
 
     override fun startRaLogin(username: String, password: String) {
-        val ra = RetroAchievementsManager(
-            context = this,
-            onLogin = { success, nameOrError, token ->
-                if (success && token != null) {
-                    settings.raUsername = nameOrError
-                    settings.raToken = token
-                    settings.raPassword = password
-                    settingsViewModel.get().raPassword = ""
-                    nav.dialogState.value = DialogState.RAAccount(username = nameOrError)
-                } else {
-                    nav.dialogState.value = DialogState.RALoggingIn(message = getString(R.string.ra_login_invalid))
-                }
-                loginPollHandler.removeCallbacks(loginPollRunnable)
-                loginManager?.destroy()
-                loginManager = null
-            }
-        )
-        ra.init()
-        ra.loginWithPassword(username, password)
-        loginManager = ra
-        loginPollHandler.postDelayed(loginPollRunnable, 100)
-        nav.dialogState.value = DialogState.RALoggingIn()
+        Timber.wtf("No more RA login for you")
+        nav.dialogState.value = DialogState.LaunchError("No more RA")
     }
 
     override fun startRommPairing(host: String) {

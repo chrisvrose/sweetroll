@@ -3,6 +3,7 @@ package dev.cannoli.scorza.config
 import dev.cannoli.scorza.R
 
 enum class EmulatorSource(val displayName: String) {
+    @Deprecated("Remove internal")
     Internal("Internal"),
     RetroArch("RetroArch"),
     Standalone("Standalone");

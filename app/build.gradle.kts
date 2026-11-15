@@ -70,7 +70,6 @@ android {
             if (keystorePropertiesFile.exists()) {
                 signingConfig = signingConfigs.getByName("release")
             }
-            isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -130,6 +129,7 @@ dependencies {
     implementation(libs.coil.compose)
     testImplementation(libs.junit)
     testImplementation(libs.okhttp.mockwebserver)
+    implementation(libs.timber)
     testImplementation("io.mockk:mockk:1.13.11")
     testImplementation("org.json:json:20240303")
     testImplementation("org.robolectric:robolectric:4.13")

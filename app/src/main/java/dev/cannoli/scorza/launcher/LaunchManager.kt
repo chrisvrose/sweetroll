@@ -14,9 +14,7 @@ import dev.cannoli.scorza.config.EmulatorSource
 import dev.cannoli.scorza.config.LaunchMethod
 import dev.cannoli.scorza.input.runtime.confirmButton
 import dev.cannoli.scorza.input.runtime.labelSet
-import dev.cannoli.scorza.launcher.toIgmInputMapping
 import dev.cannoli.scorza.config.PlatformConfig
-import dev.cannoli.scorza.libretro.LibretroActivity
 import dev.cannoli.scorza.libretro.SaveSlotManager
 import dev.cannoli.scorza.model.App
 import dev.cannoli.scorza.model.LaunchTarget
@@ -25,6 +23,7 @@ import dev.cannoli.scorza.settings.SettingsRepository
 import dev.cannoli.scorza.ui.screens.DialogState
 import dev.cannoli.scorza.util.ArchiveExtractor
 import dev.cannoli.scorza.util.parseM3uDiscPaths
+import timber.log.Timber
 import java.io.File
 import java.io.IOException
 import java.security.MessageDigest
@@ -201,6 +200,7 @@ class LaunchManager(
         return rom.path
     }
 
+    @Deprecated("Remove")
     fun findEmbeddedCore(coreName: String): String? {
         val soName = "${coreName}_android.so"
         val coreFile = File(context.filesDir, "cores/$soName")
@@ -211,9 +211,10 @@ class LaunchManager(
     private fun sourceFor(rom: Rom): EmulatorSource? =
         overrideFor(rom)?.source ?: platformConfig.getPlatformChoice(rom.platformTag)?.source
 
+
+    @Deprecated("Remove")
     fun getEmbeddedCorePath(rom: Rom): String? {
         val target = rom.launchTarget
-        if (target is LaunchTarget.Embedded) return target.corePath
         if (target !is LaunchTarget.RetroArch) return null
         val gameOverride = overrideFor(rom)
         val source = sourceFor(rom)
@@ -502,56 +503,15 @@ class LaunchManager(
     fun launchEmbedded(rom: Rom, corePath: String, resumeSlot: Int = -1, originalRomPath: String? = null): DialogState? {
         val paths = CannoliPaths(settings.sdCardRoot)
         val romName = normalizedRomName(rom)
-
         originalRomPath?.let { orig ->
             val archive = File(orig)
             if (archive.absolutePath != rom.path.absolutePath && ArchiveExtractor.isArchive(archive)) {
-                SaveIdentityMigrator(File(settings.sdCardRoot), atomicRename).migrateOnLaunch(rom.platformTag, romName, archive)
+                Timber.wtf("Deprecated code path - SaveIdentityMigrator encountered")
             }
         }
 
-        val saveDir = paths.savesFor(rom.platformTag)
-        saveDir.mkdirs()
-        val stateBase = paths.saveStateBase(rom.platformTag, romName)
-        stateBase.parentFile?.mkdirs()
-
-        val args = LaunchArgs(
-            gameTitle = rom.displayName,
-            corePath = corePath,
-            romPath = rom.path.absolutePath,
-            originalRomPath = originalRomPath?.takeIf { it != rom.path.absolutePath },
-            sramPath = paths.sramFile(rom.platformTag, romName).absolutePath,
-            statePath = stateBase.absolutePath,
-            systemDir = paths.biosFor(rom.platformTag).absolutePath,
-            saveDir = saveDir.absolutePath,
-            platformTag = rom.platformTag,
-            platformName = platformConfig.getDisplayName(rom.platformTag),
-            cannoliRoot = paths.root.absolutePath,
-            colorHighlight = settings.colorHighlight,
-            colorText = settings.colorText,
-            colorHighlightText = settings.colorHighlightText,
-            colorAccent = settings.colorAccent,
-            colorTitle = settings.colorTitle,
-            colorBackground = settings.colorBackground,
-            colorStatusBar = settings.colorStatusBar,
-            font = settings.font,
-            debugLogging = settings.loggingSession,
-            raUsername = settings.raUsername,
-            raToken = settings.raToken,
-            raPassword = settings.raPassword,
-            raGameId = rom.raGameId,
-            romId = rom.id,
-            resumeSlot = resumeSlot,
-        )
-        val intent = args.writeTo(Intent(context, LibretroActivity::class.java))
-            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        val opts = ActivityOptions.makeCustomAnimation(context, 0, 0).toBundle()
-        return try {
-            context.startActivity(intent, opts)
-            null
-        } catch (t: Throwable) {
-            errorAndReset(DialogState.LaunchError(context.getString(dev.cannoli.scorza.R.string.launch_error_generic)))
-        }
+        Timber.wtf("Tried to launch embedded rom. On the path to removal")
+        return errorAndReset(DialogState.LaunchError(context.getString(dev.cannoli.scorza.R.string.launch_error_generic)))
     }
 
     private fun normalizedRomName(rom: Rom): String =

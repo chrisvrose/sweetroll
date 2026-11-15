@@ -1,8 +1,14 @@
 package dev.cannoli.scorza.model
 
 sealed interface LaunchTarget {
+    /**
+     * Launching retroarch
+     */
     data object RetroArch : LaunchTarget
 
+    /**
+     * Launching a custom emulator
+     */
     data class EmuLaunch(
         val packageName: String,
         val activityName: String,

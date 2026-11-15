@@ -27,6 +27,7 @@ import dev.cannoli.ui.theme.Spacing
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
+@Deprecated("Remove")
 @Composable
 fun SaveStatePickerScreen(
     rom: Rom,
