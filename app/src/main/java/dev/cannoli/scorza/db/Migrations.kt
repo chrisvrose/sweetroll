@@ -232,7 +232,7 @@ internal object Migrations {
                 INSERT INTO game_overrides_v12 (rom_id, source, core_id, app_package)
                 SELECT rom_id,
                        CASE
-                         WHEN runner = 'Internal' THEN 'Internal'
+                         WHEN runner = 'Internal' THEN 'RetroArch'
                          WHEN runner IN ('Standalone', 'App') THEN 'Standalone'
                          WHEN runner IS NOT NULL AND runner <> '' THEN 'RetroArch'
                          WHEN app_package IS NOT NULL THEN 'Standalone'

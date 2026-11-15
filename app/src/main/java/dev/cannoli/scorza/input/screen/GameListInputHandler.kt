@@ -196,11 +196,6 @@ class GameListInputHandler @Inject constructor(
                     options.addAll(listOf(MENU_MANAGE_COLLECTIONS, MENU_REMOVE))
                 } else {
                     options.add(MENU_MANAGE_COLLECTIONS)
-                    if (settings.raToken.isNotEmpty() &&
-                        dev.cannoli.scorza.ra.RaConsoles.MAP.containsKey(glState.platformTag.uppercase())
-                    ) {
-                        options.add(MENU_PRELOAD_ACHIEVEMENTS)
-                    }
                     options.addAll(listOf(MENU_DELETE_ART, MENU_DELETE_GAME))
                 }
                 gameListViewModel.confirmMultiSelect()

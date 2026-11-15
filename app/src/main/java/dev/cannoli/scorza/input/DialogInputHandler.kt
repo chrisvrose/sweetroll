@@ -29,7 +29,6 @@ import dev.cannoli.scorza.romm.download.sanitizeFsName
 import dev.cannoli.scorza.romm.sync.RomKeys
 import dev.cannoli.scorza.settings.SettingsRepository
 import dev.cannoli.scorza.ui.screens.ColorEntry
-import dev.cannoli.scorza.ui.screens.EmulatorPickerOption
 import dev.cannoli.scorza.ui.screens.DialogState
 import dev.cannoli.scorza.ui.screens.KeyboardHost
 import dev.cannoli.scorza.ui.screens.withMenuDelta
@@ -54,6 +53,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
 
@@ -1760,20 +1760,7 @@ class DialogInputHandler @Inject constructor(
                 nav.dialogState.value = DialogState.None
             }
             MENU_PRELOAD_ACHIEVEMENTS -> {
-                pendingContextReturn = null
-                val pathSet = state.gamePaths.toSet()
-                val roms = gameListViewModel.state.value.items
-                    .filterIsInstance<ListItem.RomItem>()
-                    .map { it.rom }
-                    .filter { rom ->
-                        rom.path.absolutePath in pathSet &&
-                            dev.cannoli.scorza.ra.RaPreloadEligibility.isEligible(
-                                platformTag = rom.platformTag,
-                                embeddedCorePresent = launchManager.getEmbeddedCorePath(rom) != null,
-                                raLoggedIn = settings.raToken.isNotEmpty(),
-                            )
-                    }
-                raPreloadController.preloadBulk(roms)
+                Timber.wtf("Preload achievements removed as all embedded cores removed")
             }
             MENU_REMOVE -> {
                 pendingContextReturn = null
@@ -1956,21 +1943,6 @@ class DialogInputHandler @Inject constructor(
                 if (rom?.artFile != null) {
                     val idx = indexOf(MENU_DELETE_GAME)
                     if (idx >= 0) add(idx, MENU_DELETE_ART) else add(MENU_DELETE_ART)
-                }
-                if (rom != null && dev.cannoli.scorza.ra.RaPreloadEligibility.isEligible(
-                        platformTag = rom.platformTag,
-                        embeddedCorePresent = launchManager.getEmbeddedCorePath(rom) != null,
-                        raLoggedIn = settings.raToken.isNotEmpty(),
-                    )
-                ) {
-                    val cached = rom.raCachedGameId?.let { gid ->
-                        dev.cannoli.scorza.ra.RaOfflineStore(
-                            dev.cannoli.scorza.config.CannoliPaths(settings.sdCardRoot).configRaOffline
-                        ).isCached(gid)
-                    } ?: false
-                    val item = if (cached) "$MENU_PRELOAD_ACHIEVEMENTS\tCached" else MENU_PRELOAD_ACHIEVEMENTS
-                    val raIdx = indexOfFirst { it == MENU_RA_GAME_ID || it.startsWith("$MENU_RA_GAME_ID\t") }
-                    if (raIdx >= 0) add(raIdx + 1, item) else add(item)
                 }
                 if (item is ListItem.RomItem && rommSavesOptions(item.rom).isNotEmpty()) {
                     val idx = indexOf(MENU_RENAME)

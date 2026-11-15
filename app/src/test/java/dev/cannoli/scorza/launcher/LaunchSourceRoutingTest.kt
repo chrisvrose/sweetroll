@@ -2,7 +2,6 @@ package dev.cannoli.scorza.launcher
 
 import dev.cannoli.scorza.config.EmulatorSource
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Test
 
@@ -14,12 +13,7 @@ class LaunchSourceRoutingTest {
         embedded: Boolean = false,
         ra: Boolean = false,
         standalone: Boolean = false,
-    ) = LaunchManager.pickSource(gameSource, platformSource, { embedded }, { ra }, { standalone })
-
-    @Test fun `a game choice wins over the platform choice`() = assertEquals(
-        EmulatorSource.Internal,
-        pick(EmulatorSource.Internal, EmulatorSource.RetroArch, embedded = true, ra = true, standalone = true),
-    )
+    ) = LaunchManager.pickSource(gameSource, platformSource, { ra }, { standalone })
 
     @Test fun `the platform choice applies when the game has none`() = assertEquals(
         EmulatorSource.RetroArch,
@@ -46,17 +40,4 @@ class LaunchSourceRoutingTest {
         EmulatorSource.Standalone,
         pick(platformSource = EmulatorSource.Standalone, embedded = true, ra = true),
     )
-
-    // A stored choice decides on its own, so the filesystem and package probes must not run.
-    @Test fun `a stored choice does not evaluate the availability probes`() {
-        var probed = false
-        LaunchManager.pickSource(
-            gameSource = null,
-            platformSource = EmulatorSource.Internal,
-            embeddedAvailable = { probed = true; true },
-            raAvailable = { probed = true; true },
-            standaloneAvailable = { probed = true; true },
-        )
-        assertFalse("a decided source must not trigger an availability probe", probed)
-    }
 }

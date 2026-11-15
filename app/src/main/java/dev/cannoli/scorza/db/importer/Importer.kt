@@ -15,6 +15,7 @@ import dev.cannoli.scorza.db.executeReturningId
 import dev.cannoli.scorza.db.query
 import dev.cannoli.scorza.db.transaction
 import dev.cannoli.scorza.util.ScanLog
+import timber.log.Timber
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -432,45 +433,7 @@ class Importer(
     }
 
     private fun archiveLegacyFiles(backupDir: File) {
-        backupDir.mkdirs()
-        // cores.json is deliberately absent: unlike everything below it, no table supersedes
-        // it and PlatformConfig still reads it, so archiving it lost every emulator mapping.
-        val candidates = listOf(
-            paths.collectionsDir,
-            paths.raGameIdsFile,
-            paths.raGameIdsLegacyFile,
-            paths.recentlyPlayedFile,
-            paths.configOrdering,
-            paths.toolsDir,
-            paths.portsDir,
-            paths.platformCacheFile,
-            paths.gameCacheFile,
-        )
-        for (src in candidates) {
-            if (!src.exists()) continue
-            val dest = File(backupDir, src.relativeTo(cannoliRoot).path)
-            try {
-                dest.parentFile?.mkdirs()
-                if (!src.renameTo(dest)) {
-                    if (src.isDirectory) src.copyRecursively(dest, overwrite = true)
-                    else src.copyTo(dest, overwrite = true)
-                    if (src.isDirectory) src.deleteRecursively() else src.delete()
-                }
-                pruneEmptyParents(src)
-            } catch (t: Throwable) {
-                ScanLog.write("WARN failed to archive ${src.absolutePath}: ${t.message}")
-            }
-        }
-    }
-
-    private fun pruneEmptyParents(start: File) {
-        var dir = start.parentFile ?: return
-        while (dir.absolutePath != cannoliRoot.absolutePath && dir.startsWith(cannoliRoot)) {
-            val children = dir.listFiles() ?: break
-            if (children.isNotEmpty()) break
-            if (!dir.delete()) break
-            dir = dir.parentFile ?: break
-        }
+        Timber.i("Removed: archiveLegacy")
     }
 
     private fun countRoms(): Int =

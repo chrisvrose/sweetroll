@@ -36,7 +36,6 @@ class RaPreloadEngineTest {
         romsRepository = repo,
         username = "bob",
         token = "tok",
-        hasher = { _, _ -> "deadbeef" },
     )
 
     private fun rom(id: Long = 1L, raGameId: Int? = null, tag: String = "SNES") = Rom(

@@ -14,22 +14,10 @@ class RaPreloadEngine(
     private val romsRepository: RomsRepository,
     private val username: String,
     private val token: String,
-    private val hasher: (String, Int) -> String? = { path, consoleId -> RaHasher.hashRom(path, consoleId) },
 ) {
     suspend fun preloadOne(client: RaConnectClient, rom: Rom): RaOfflinePreloader.Result {
-        var gameId = rom.raGameId ?: 0
-        var hash: String? = null
-        if (gameId <= 0) {
-            val consoleId = RaConsoles.MAP[rom.platformTag.uppercase()]
-            if (consoleId != null) {
-                hash = hasher(rom.path.absolutePath, consoleId)
-                if (hash != null) {
-                    val resolved = client.resolveGameId(username, token, hash)
-                    if (resolved < 0) return RaOfflinePreloader.Result.Failure("offline")
-                    gameId = resolved
-                }
-            }
-        }
+        val gameId = rom.raGameId ?: 0
+        val hash: String? = null
         val result = refresh(client, rom.path.absolutePath, rom.platformTag, gameId, hash)
         if (result is RaOfflinePreloader.Result.Success && gameId > 0) {
             romsRepository.setRaCachedGameId(rom.id, gameId)

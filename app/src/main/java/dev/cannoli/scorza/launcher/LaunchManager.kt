@@ -1,8 +1,6 @@
 package dev.cannoli.scorza.launcher
 
-import android.app.ActivityOptions
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import dev.cannoli.igm.BatteryDisplayMode
 import dev.cannoli.igm.IgmColors
@@ -23,7 +21,6 @@ import dev.cannoli.scorza.settings.SettingsRepository
 import dev.cannoli.scorza.ui.screens.DialogState
 import dev.cannoli.scorza.util.ArchiveExtractor
 import dev.cannoli.scorza.util.parseM3uDiscPaths
-import timber.log.Timber
 import java.io.File
 import java.io.IOException
 import java.security.MessageDigest
@@ -115,9 +112,8 @@ class LaunchManager(
             put("sort_savestates_enable", "false")
             put("sort_savestates_by_content_enable", "false")
             put("state_slot", raSlot.toString())
-            // RetroArch's own auto-save is how ricotta saves on quit; the built-in runner does the
-            // equivalent explicitly in LibretroActivity. Both write the Auto slot, so both gate on
-            // the same setting. This lives here, not in the base config, because the base is
+            // RetroArch's own auto-save is how ricotta saves on quit.
+            // This lives here, not in the base config, because the base is
             // hash-gated and would not pick up a toggle until CONFIG_VERSION moved.
             put("savestate_auto_save", if (settings.alwaysSaveOnQuit) "true" else "false")
             if (resume) {
@@ -200,31 +196,9 @@ class LaunchManager(
         return rom.path
     }
 
-    @Deprecated("Remove")
-    fun findEmbeddedCore(coreName: String): String? {
-        val soName = "${coreName}_android.so"
-        val coreFile = File(context.filesDir, "cores/$soName")
-        return if (coreFile.exists()) coreFile.absolutePath else null
-    }
-
     /** The stored source that applies to this ROM, game override first. Null means unset. */
     private fun sourceFor(rom: Rom): EmulatorSource? =
         overrideFor(rom)?.source ?: platformConfig.getPlatformChoice(rom.platformTag)?.source
-
-
-    @Deprecated("Remove")
-    fun getEmbeddedCorePath(rom: Rom): String? {
-        val target = rom.launchTarget
-        if (target !is LaunchTarget.RetroArch) return null
-        val gameOverride = overrideFor(rom)
-        val source = sourceFor(rom)
-        // Only an Internal selection may use the bundled core. A platform mapped to a standalone
-        // app used to fall through here, so A launched the app while Resume launched the core.
-        if (source != null && source != EmulatorSource.Internal) return null
-        val core = gameOverride?.coreId?.ifEmpty { null }
-            ?: platformConfig.getCoreName(rom.platformTag) ?: return null
-        return findEmbeddedCore(core)
-    }
 
     fun saveStateBasePath(rom: Rom): String {
         val romName = normalizedRomName(rom)
@@ -257,8 +231,7 @@ class LaunchManager(
             // so offering Resume for one promises something no external emulator can honour.
             if (sourceFor(rom) == EmulatorSource.Standalone) continue
             val target = rom.launchTarget
-            val embedded = target is LaunchTarget.Embedded || getEmbeddedCorePath(rom) != null
-            if (embedded || (target is LaunchTarget.RetroArch && RetroArchLauncher.isRicotta(settings.retroArchPackage))) {
+            if (target is LaunchTarget.RetroArch && RetroArchLauncher.isRicotta(settings.retroArchPackage)) {
                 result.add(rom.path.absolutePath)
             }
         }
@@ -289,7 +262,6 @@ class LaunchManager(
                 val source = pickSource(
                     gameSource = gameOverride?.source,
                     platformSource = platformConfig.getPlatformChoice(rom.platformTag)?.source,
-                    embeddedAvailable = { resolvedCore?.let { findEmbeddedCore(it) != null } ?: false },
                     // configuredCores, not installedCores: a core present only in a RetroArch the
                     // user is not using must not suppress the standalone fallback.
                     raAvailable = {
@@ -313,15 +285,6 @@ class LaunchManager(
                 } else {
                     val core = resolvedCore
                     if (core != null) {
-                        if (source != EmulatorSource.RetroArch) {
-                            val embeddedCorePath = findEmbeddedCore(core)
-                            debugLog("RetroArch target: core=$core source=$source embeddedCorePath=$embeddedCorePath")
-                            if (embeddedCorePath != null) {
-                                val embeddedFile = resolveLaunchFile(rom, extractArchives = true)
-                                    ?: return errorAndReset(DialogState.LaunchError(context.getString(dev.cannoli.scorza.R.string.launch_error_extract)))
-                                return launchEmbedded(rom.copy(path = embeddedFile), embeddedCorePath, originalRomPath = rom.path.absolutePath)
-                            }
-                        }
                         val raPackage = settings.retroArchPackage
                         if (!context.isPackageInstalled(raPackage)) {
                             val appName = try {
@@ -378,11 +341,6 @@ class LaunchManager(
                     apkLauncher.launch(pkg)
                 }
             }
-            is LaunchTarget.Embedded -> {
-                val embeddedFile = resolveLaunchFile(rom, extractArchives = true)
-                    ?: return errorAndReset(DialogState.LaunchError(context.getString(dev.cannoli.scorza.R.string.launch_error_extract)))
-                return launchEmbedded(rom.copy(path = embeddedFile), target.corePath, originalRomPath = rom.path.absolutePath)
-            }
         }
 
         return launchResultDialog(result, rom.platformTag)
@@ -402,12 +360,8 @@ class LaunchManager(
         if (launchState.launching) return null
         launchState.launching = true
         launchState.lastLaunched = rom
-        val embeddedCorePath = getEmbeddedCorePath(rom)
-        val launchFile = resolveLaunchFile(rom, extractArchives = embeddedCorePath != null)
+        val launchFile = resolveLaunchFile(rom, extractArchives = false)
             ?: run { launchState.launching = false; launchState.lastLaunched = null; return null }
-        if (embeddedCorePath != null) {
-            return launchEmbedded(rom.copy(path = launchFile), embeddedCorePath, resumeSlot, originalRomPath = rom.path.absolutePath)
-        }
         val gameOverride = overrideFor(rom)
         // Resume had no standalone branch, so a platform mapped to an uninstalled standalone app
         // fell straight through to the RetroArch path and launched the platform default core.
@@ -498,20 +452,6 @@ class LaunchManager(
             val stamp = synchronized(debugFmt) { debugFmt.format(java.util.Date()) }
             dev.cannoli.scorza.util.LogWriter.write(debugSink, "$stamp $message\n")
         } catch (_: Exception) {}
-    }
-
-    fun launchEmbedded(rom: Rom, corePath: String, resumeSlot: Int = -1, originalRomPath: String? = null): DialogState? {
-        val paths = CannoliPaths(settings.sdCardRoot)
-        val romName = normalizedRomName(rom)
-        originalRomPath?.let { orig ->
-            val archive = File(orig)
-            if (archive.absolutePath != rom.path.absolutePath && ArchiveExtractor.isArchive(archive)) {
-                Timber.wtf("Deprecated code path - SaveIdentityMigrator encountered")
-            }
-        }
-
-        Timber.wtf("Tried to launch embedded rom. On the path to removal")
-        return errorAndReset(DialogState.LaunchError(context.getString(dev.cannoli.scorza.R.string.launch_error_generic)))
     }
 
     private fun normalizedRomName(rom: Rom): String =
@@ -610,46 +550,20 @@ class LaunchManager(
     companion object {
         private const val CONFIG_VERSION = 7
 
-        // Null means no stored preference anywhere, so the caller falls through to its embedded
-        // core probe and then RetroArch, which is what the pre-identity code did implicitly.
+        // Null means no stored preference anywhere, so the caller falls through to RetroArch,
+        // which is what the pre-identity code did implicitly.
         // The availability probes are lazy because a stored choice decides the answer on its
         // own, and probing the filesystem to reach a conclusion already known is wasted work.
         fun pickSource(
             gameSource: EmulatorSource?,
             platformSource: EmulatorSource?,
-            embeddedAvailable: () -> Boolean,
             raAvailable: () -> Boolean,
             standaloneAvailable: () -> Boolean,
         ): EmulatorSource? {
             val stored = gameSource ?: platformSource
             if (stored != null) return stored
-            if (!embeddedAvailable() && !raAvailable() && standaloneAvailable()) return EmulatorSource.Standalone
+            if (!raAvailable() && standaloneAvailable()) return EmulatorSource.Standalone
             return null
-        }
-
-        fun extractBundledCores(context: Context): String {
-            val coresDir = File(context.filesDir, "cores")
-            coresDir.mkdirs()
-            val versionFile = File(coresDir, ".version")
-            val currentVersion = File(context.applicationInfo.sourceDir).lastModified().toString()
-            if (versionFile.exists() && versionFile.readText() == currentVersion) return coresDir.absolutePath
-            val extracted = mutableSetOf<String>()
-            java.util.zip.ZipFile(context.applicationInfo.sourceDir).use { apkZip ->
-                val abi = android.os.Build.SUPPORTED_ABIS.firstOrNull() ?: "arm64-v8a"
-                val prefix = "lib/$abi/"
-                for (entry in apkZip.entries()) {
-                    if (!entry.name.startsWith(prefix) || !entry.name.endsWith("_libretro_android.so")) continue
-                    val name = entry.name.removePrefix(prefix)
-                    val dst = File(coresDir, name)
-                    apkZip.getInputStream(entry).use { inp -> dst.outputStream().use { inp.copyTo(it) } }
-                    extracted.add(name)
-                }
-            }
-            coresDir.listFiles()?.forEach { f ->
-                if (f.name.endsWith("_libretro_android.so") && f.name !in extracted) f.delete()
-            }
-            versionFile.writeText(currentVersion)
-            return coresDir.absolutePath
         }
     }
 }

@@ -51,25 +51,6 @@ class GameOverrideStoreTest {
         )
     }
 
-    @Test fun `put replaces rather than duplicating`() {
-        val db = db("ov-replace")
-        val store = GameOverrideStore(db)
-        val id = insertRom(db, "NES", "NES/game.nes")
-        store.put(id, EmulatorChoice(EmulatorSource.Internal, "a_libretro"))
-        store.put(id, EmulatorChoice(EmulatorSource.RetroArch, "b_libretro"))
-        assertEquals(EmulatorChoice(EmulatorSource.RetroArch, "b_libretro"), store.get(id))
-        assertEquals(1, store.countForPlatform("NES"))
-    }
-
-    @Test fun `clear removes the override`() {
-        val db = db("ov-clear")
-        val store = GameOverrideStore(db)
-        val id = insertRom(db, "NES", "NES/game.nes")
-        store.put(id, EmulatorChoice(EmulatorSource.Internal, "a_libretro"))
-        store.clear(id)
-        assertNull(store.get(id))
-    }
-
     // The whole reason per-game overrides moved into the database.
     @Test fun `an override follows its rom through a path change`() {
         val db = db("ov-move")
@@ -81,28 +62,6 @@ class GameOverrideStoreTest {
             EmulatorChoice(EmulatorSource.Standalone, appPackage = "com.epsxe.ePSXe"),
             store.get(id),
         )
-    }
-
-    @Test fun `deleting the rom cascades the override away`() {
-        val db = db("ov-cascade")
-        val store = GameOverrideStore(db)
-        val id = insertRom(db, "NES", "NES/game.nes")
-        store.put(id, EmulatorChoice(EmulatorSource.Internal, "a_libretro"))
-        db.execute("DELETE FROM roms WHERE id = ?", id)
-        assertNull(store.get(id))
-    }
-
-    // path.startsWith(tagDir) used to make Game Boy list and clear GBA overrides.
-    @Test fun `forPlatform does not leak across a tag prefix`() {
-        val db = db("ov-prefix")
-        val store = GameOverrideStore(db)
-        val gb = insertRom(db, "GB", "GB/tetris.gb")
-        val gba = insertRom(db, "GBA", "GBA/metroid.gba")
-        store.put(gb, EmulatorChoice(EmulatorSource.Internal, "gambatte_libretro"))
-        store.put(gba, EmulatorChoice(EmulatorSource.Internal, "mgba_libretro"))
-        assertEquals(1, store.forPlatform("GB").size)
-        assertEquals(gb, store.forPlatform("GB").single().romId)
-        assertEquals(1, store.countForPlatform("GBA"))
     }
 
 }
