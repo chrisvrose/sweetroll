@@ -3,7 +3,6 @@ package dev.cannoli.scorza.input.screen
 import dagger.hilt.android.scopes.ActivityScoped
 import dev.cannoli.scorza.input.EditButtonsController
 import dev.cannoli.scorza.input.ScreenInputHandler
-import dev.cannoli.scorza.input.CanonicalButton
 import dev.cannoli.scorza.input.repo.MappingRepository
 import dev.cannoli.scorza.navigation.LauncherScreen
 import dev.cannoli.scorza.navigation.NavigationController
@@ -11,9 +10,9 @@ import dev.cannoli.scorza.ui.viewmodel.ControllersViewModel
 import javax.inject.Inject
 
 private val PROTECTED_CANONICALS = setOf(
-    CanonicalButton.BTN_UP, CanonicalButton.BTN_DOWN,
-    CanonicalButton.BTN_LEFT, CanonicalButton.BTN_RIGHT,
-    CanonicalButton.BTN_SOUTH, CanonicalButton.BTN_EAST,
+    dev.cannoli.igm.CanonicalButton.BTN_UP, dev.cannoli.igm.CanonicalButton.BTN_DOWN,
+    dev.cannoli.igm.CanonicalButton.BTN_LEFT, dev.cannoli.igm.CanonicalButton.BTN_RIGHT,
+    dev.cannoli.igm.CanonicalButton.BTN_SOUTH, dev.cannoli.igm.CanonicalButton.BTN_EAST,
 )
 
 @ActivityScoped
@@ -32,21 +31,21 @@ class EditButtonsInputHandler @Inject constructor(
     override fun onUp() {
         if (editButtonsController.isListening) return
         val screen = current() ?: return
-        val count = CanonicalButton.entries.size
+        val count = dev.cannoli.igm.CanonicalButton.entries.size
         nav.replaceTop(screen.copy(selectedIndex = (screen.selectedIndex - 1).mod(count)))
     }
 
     override fun onDown() {
         if (editButtonsController.isListening) return
         val screen = current() ?: return
-        val count = CanonicalButton.entries.size
+        val count = dev.cannoli.igm.CanonicalButton.entries.size
         nav.replaceTop(screen.copy(selectedIndex = (screen.selectedIndex + 1).mod(count)))
     }
 
     override fun onConfirm() {
         if (editButtonsController.isListening) return
         val screen = current() ?: return
-        val canonical = CanonicalButton.entries.getOrNull(screen.selectedIndex) ?: return
+        val canonical = dev.cannoli.igm.CanonicalButton.entries.getOrNull(screen.selectedIndex) ?: return
         val state = controllersViewModel.state.value
         val mapping = state.connected.firstOrNull { it.mapping.id == screen.mappingId }?.mapping
             ?: state.savedMappings.firstOrNull { it.id == screen.mappingId }
@@ -64,7 +63,7 @@ class EditButtonsInputHandler @Inject constructor(
     override fun onNorth() {
         if (editButtonsController.isListening) return
         val screen = current() ?: return
-        val canonical = CanonicalButton.entries.getOrNull(screen.selectedIndex) ?: return
+        val canonical = dev.cannoli.igm.CanonicalButton.entries.getOrNull(screen.selectedIndex) ?: return
         if (canonical in PROTECTED_CANONICALS) return
         val state = controllersViewModel.state.value
         val mapping = state.connected.firstOrNull { it.mapping.id == screen.mappingId }?.mapping

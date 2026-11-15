@@ -1,6 +1,5 @@
 package dev.cannoli.scorza.input.runtime
 
-import dev.cannoli.scorza.input.CanonicalButton
 import dev.cannoli.scorza.input.DeviceMapping
 import dev.cannoli.scorza.input.DeviceMatchRule
 import dev.cannoli.scorza.input.InputBinding
@@ -325,7 +324,13 @@ class ControllerBridgeTest {
                 id = "stadia_user",
                 displayName = "Stadia (user)",
                 match = DeviceMatchRule(vendorId = 6353, productId = 37888),
-                bindings = mapOf(CanonicalButton.BTN_SOUTH to listOf(InputBinding.Button(190))),
+                bindings = mapOf(
+                    dev.cannoli.igm.CanonicalButton.BTN_SOUTH to listOf(
+                        InputBinding.Button(
+                            190
+                        )
+                    )
+                ),
                 source = MappingSource.USER_WIZARD,
                 userEdited = true,
             )
@@ -461,7 +466,13 @@ class ControllerBridgeTest {
                 id = id,
                 displayName = "Stadia (mine)",
                 match = DeviceMatchRule(vendorId = 6353, productId = 37888),
-                bindings = mapOf(CanonicalButton.BTN_SOUTH to listOf(InputBinding.Button(190))),
+                bindings = mapOf(
+                    dev.cannoli.igm.CanonicalButton.BTN_SOUTH to listOf(
+                        InputBinding.Button(
+                            190
+                        )
+                    )
+                ),
                 source = MappingSource.USER_WIZARD,
                 userEdited = true,
             )
@@ -472,7 +483,10 @@ class ControllerBridgeTest {
         val onDisk = repo.findById(id)
         assertTrue(onDisk!!.userEdited)
         assertEquals("Stadia (mine)", onDisk.displayName)
-        assertEquals(listOf(InputBinding.Button(190)), onDisk.bindings[CanonicalButton.BTN_SOUTH])
+        assertEquals(
+            listOf(InputBinding.Button(190)),
+            onDisk.bindings[dev.cannoli.igm.CanonicalButton.BTN_SOUTH]
+        )
     }
 
     @Test
@@ -603,7 +617,7 @@ class ControllerBridgeTest {
         // Enter, not the AndroidDefault BTN_A keycode 96, proves the resolver was bypassed.
         assertEquals(
             listOf(dev.cannoli.scorza.input.InputBinding.Button(android.view.KeyEvent.KEYCODE_ENTER)),
-            mapping?.bindings?.get(dev.cannoli.scorza.input.CanonicalButton.BTN_SOUTH)?.take(1),
+            mapping?.bindings?.get(dev.cannoli.igm.CanonicalButton.BTN_SOUTH)?.take(1),
         )
     }
 

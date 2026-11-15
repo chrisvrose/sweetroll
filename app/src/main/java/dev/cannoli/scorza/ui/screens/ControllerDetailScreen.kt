@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.cannoli.scorza.R
-import dev.cannoli.scorza.input.CanonicalButton
 import dev.cannoli.scorza.input.DeviceMapping
 import dev.cannoli.scorza.navigation.LauncherScreen
 import dev.cannoli.ui.ButtonStyle
@@ -95,7 +94,7 @@ fun ControllerDetailScreen(
                 add(
                     ControllerDetailEntry.KeyValue(
                         label = stringResource(R.string.controllers_confirm_button),
-                        value = if (mapping.menuConfirm == CanonicalButton.BTN_EAST)
+                        value = if (mapping.menuConfirm == dev.cannoli.igm.CanonicalButton.BTN_EAST)
                             stringResource(R.string.value_east)
                         else
                             stringResource(R.string.value_south)

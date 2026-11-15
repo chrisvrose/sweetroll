@@ -39,6 +39,7 @@ import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.cannoli.igm.CanonicalButton
 import dev.cannoli.igm.ShortcutAction
 import dev.cannoli.scorza.R
 import dev.cannoli.scorza.input.runtime.confirmButton
@@ -59,7 +60,6 @@ import dev.cannoli.scorza.ui.screens.ControllerDetailScreen
 import dev.cannoli.scorza.ui.screens.ControllersScreen
 import dev.cannoli.scorza.ui.screens.EditButtonsScreen
 import dev.cannoli.scorza.ui.screens.EmulatorMappingEntry
-import dev.cannoli.scorza.ui.screens.EmulatorPickerOption
 import dev.cannoli.scorza.ui.screens.DialogState
 import dev.cannoli.scorza.ui.screens.DirectoryBrowserScreen
 import dev.cannoli.scorza.ui.screens.GameListScreen
@@ -78,7 +78,6 @@ import dev.cannoli.scorza.ui.viewmodel.GameListViewModel
 import dev.cannoli.scorza.ui.viewmodel.InputTesterViewModel
 import dev.cannoli.scorza.ui.viewmodel.SettingsViewModel
 import dev.cannoli.scorza.ui.viewmodel.SystemListViewModel
-import dev.cannoli.ui.components.ConfirmOverlay
 import dev.cannoli.ui.components.List
 import dev.cannoli.ui.components.ListSection
 import dev.cannoli.ui.components.SectionedList
@@ -287,12 +286,12 @@ sealed class LauncherScreen {
     }
     data class EditButtons(
         val mappingId: String,
-        val listeningCanonical: dev.cannoli.scorza.input.CanonicalButton? = null,
+        val listeningCanonical: CanonicalButton? = null,
         val countdownMs: Int = 0,
         override val selectedIndex: Int = 0,
         override val scrollTarget: Int = 0,
     ) : LauncherScreen(), ScrollableScreen {
-        override val itemCount: Int get() = dev.cannoli.scorza.input.CanonicalButton.entries.size
+        override val itemCount: Int get() = CanonicalButton.entries.size
         override fun withScroll(selectedIndex: Int, scrollTarget: Int) = copy(selectedIndex = selectedIndex, scrollTarget = scrollTarget)
     }
     data class LoggingSettings(

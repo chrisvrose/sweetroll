@@ -1,7 +1,6 @@
 package dev.cannoli.scorza.input.repo
 
 import dev.cannoli.scorza.input.AnalogRole
-import dev.cannoli.scorza.input.CanonicalButton
 import dev.cannoli.scorza.input.DeviceMatchRule
 import dev.cannoli.scorza.input.DeviceMapping
 import dev.cannoli.scorza.input.GlyphStyle
@@ -22,8 +21,8 @@ class MappingIniSerializerTest {
             productId = 37888,
         ),
         bindings = linkedMapOf(
-            CanonicalButton.BTN_SOUTH to listOf(InputBinding.Button(96)),
-            CanonicalButton.BTN_L2 to listOf(
+            dev.cannoli.igm.CanonicalButton.BTN_SOUTH to listOf(InputBinding.Button(96)),
+            dev.cannoli.igm.CanonicalButton.BTN_L2 to listOf(
                 InputBinding.Axis(
                     axis = 17,
                     restingValue = -1f,
@@ -33,12 +32,12 @@ class MappingIniSerializerTest {
                 ),
                 InputBinding.Button(104),
             ),
-            CanonicalButton.BTN_UP to listOf(
+            dev.cannoli.igm.CanonicalButton.BTN_UP to listOf(
                 InputBinding.Hat(axis = 16, direction = HatDirection.UP),
             ),
         ),
-        menuConfirm = CanonicalButton.BTN_EAST,
-        menuBack = CanonicalButton.BTN_SOUTH,
+        menuConfirm = dev.cannoli.igm.CanonicalButton.BTN_EAST,
+        menuBack = dev.cannoli.igm.CanonicalButton.BTN_SOUTH,
         glyphStyle = GlyphStyle.PLUMBER,
         excludeFromGameplay = false,
         defaultControllerTypeId = null,
@@ -94,14 +93,14 @@ class MappingIniSerializerTest {
             0=button:99
         """.trimIndent()
         val t = MappingIniSerializer.fromIni("test", ini)
-        assertEquals(setOf(CanonicalButton.BTN_SOUTH), t.bindings.keys)
+        assertEquals(setOf(dev.cannoli.igm.CanonicalButton.BTN_SOUTH), t.bindings.keys)
     }
 
     @Test
     fun analog_role_round_trips_for_stick_axes() {
         val template = sample.copy(
             bindings = mapOf(
-                CanonicalButton.BTN_L3 to listOf(
+                dev.cannoli.igm.CanonicalButton.BTN_L3 to listOf(
                     InputBinding.Axis(
                         axis = 0,
                         restingValue = 0f,
@@ -115,7 +114,7 @@ class MappingIniSerializerTest {
         )
         val ini = MappingIniSerializer.toIni(template)
         val parsed = MappingIniSerializer.fromIni("stadia_controller", ini)
-        val axis = parsed.bindings[CanonicalButton.BTN_L3]!![0] as InputBinding.Axis
+        val axis = parsed.bindings[dev.cannoli.igm.CanonicalButton.BTN_L3]!![0] as InputBinding.Axis
         assertEquals(AnalogRole.LEFT_STICK_X, axis.analogRole)
     }
 }

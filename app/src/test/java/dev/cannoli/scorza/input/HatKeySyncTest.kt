@@ -1,6 +1,7 @@
 package dev.cannoli.scorza.input
 
 import android.view.KeyEvent
+import dev.cannoli.igm.CanonicalButton
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -128,10 +129,14 @@ class HatKeySyncTest {
 
     @Test
     fun `dpad keycodes map back to canonical directions`() {
-        assertEquals(KeyEvent.KEYCODE_DPAD_UP, HatKeys.keyCodeFor(CanonicalButton.BTN_UP))
-        assertEquals(KeyEvent.KEYCODE_DPAD_DOWN, HatKeys.keyCodeFor(CanonicalButton.BTN_DOWN))
-        assertEquals(KeyEvent.KEYCODE_DPAD_LEFT, HatKeys.keyCodeFor(CanonicalButton.BTN_LEFT))
-        assertEquals(KeyEvent.KEYCODE_DPAD_RIGHT, HatKeys.keyCodeFor(CanonicalButton.BTN_RIGHT))
+        assertEquals(KeyEvent.KEYCODE_DPAD_UP,
+            HatKeys.keyCodeFor(dev.cannoli.igm.CanonicalButton.BTN_UP))
+        assertEquals(KeyEvent.KEYCODE_DPAD_DOWN,
+            HatKeys.keyCodeFor(dev.cannoli.igm.CanonicalButton.BTN_DOWN))
+        assertEquals(KeyEvent.KEYCODE_DPAD_LEFT,
+            HatKeys.keyCodeFor(dev.cannoli.igm.CanonicalButton.BTN_LEFT))
+        assertEquals(KeyEvent.KEYCODE_DPAD_RIGHT,
+            HatKeys.keyCodeFor(dev.cannoli.igm.CanonicalButton.BTN_RIGHT))
         assertEquals(null, HatKeys.keyCodeFor(CanonicalButton.BTN_SOUTH))
     }
 }

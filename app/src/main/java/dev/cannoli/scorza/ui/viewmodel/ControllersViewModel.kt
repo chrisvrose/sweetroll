@@ -1,7 +1,6 @@
 package dev.cannoli.scorza.ui.viewmodel
 
 import dagger.hilt.android.scopes.ActivityScoped
-import dev.cannoli.scorza.input.CanonicalButton
 import dev.cannoli.scorza.input.DeviceMapping
 import dev.cannoli.scorza.input.GlyphStyle
 import dev.cannoli.scorza.input.repo.MappingRepository
@@ -72,8 +71,8 @@ class ControllersViewModel @Inject constructor(
 
     fun cycleConfirmButton(mapping: DeviceMapping): DeviceMapping {
         val flipped = mapping.copy(
-            menuConfirm = if (mapping.menuConfirm == CanonicalButton.BTN_EAST) CanonicalButton.BTN_SOUTH else CanonicalButton.BTN_EAST,
-            menuBack = if (mapping.menuConfirm == CanonicalButton.BTN_EAST) CanonicalButton.BTN_EAST else CanonicalButton.BTN_SOUTH,
+            menuConfirm = if (mapping.menuConfirm == dev.cannoli.igm.CanonicalButton.BTN_EAST) dev.cannoli.igm.CanonicalButton.BTN_SOUTH else dev.cannoli.igm.CanonicalButton.BTN_EAST,
+            menuBack = if (mapping.menuConfirm == dev.cannoli.igm.CanonicalButton.BTN_EAST) dev.cannoli.igm.CanonicalButton.BTN_EAST else dev.cannoli.igm.CanonicalButton.BTN_SOUTH,
             userEdited = true,
         )
         return persist(flipped, rebuildEvaluator = false)

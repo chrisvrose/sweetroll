@@ -3,6 +3,7 @@ package dev.cannoli.scorza.launcher
 import android.content.Context
 import android.content.pm.PackageManager
 import dev.cannoli.igm.BatteryDisplayMode
+import dev.cannoli.igm.CanonicalButton
 import dev.cannoli.igm.IgmColors
 import dev.cannoli.igm.IgmDisplaySettings
 import dev.cannoli.igm.TimeFormatMode
@@ -538,7 +539,7 @@ class LaunchManager(
     private fun resolveMenuKeycodes(): List<Int> =
         activeMappingHolder.active.value
             ?.bindings
-            ?.get(dev.cannoli.scorza.input.CanonicalButton.BTN_MENU)
+            ?.get(CanonicalButton.BTN_MENU)
             ?.filterIsInstance<dev.cannoli.scorza.input.InputBinding.Button>()
             ?.map { it.keyCode }
             ?.takeIf { it.isNotEmpty() }

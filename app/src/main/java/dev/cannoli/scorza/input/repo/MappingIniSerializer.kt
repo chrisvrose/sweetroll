@@ -1,7 +1,6 @@
 package dev.cannoli.scorza.input.repo
 
 import dev.cannoli.scorza.input.AnalogRole
-import dev.cannoli.scorza.input.CanonicalButton
 import dev.cannoli.scorza.input.DeviceMatchRule
 import dev.cannoli.scorza.input.DeviceMapping
 import dev.cannoli.scorza.input.GlyphStyle
@@ -64,11 +63,12 @@ object MappingIniSerializer {
         val glyph = data.getSection("glyph")
         val behavior = data.getSection("behavior")
 
-        val bindings = mutableMapOf<CanonicalButton, List<InputBinding>>()
+        val bindings = mutableMapOf<dev.cannoli.igm.CanonicalButton, List<InputBinding>>()
         for ((sectionName, entries) in data.sections) {
             if (!sectionName.startsWith("binding.")) continue
             val canonicalName = sectionName.removePrefix("binding.")
-            val canonical = runCatching { CanonicalButton.valueOf(canonicalName) }.getOrNull()
+            val canonical =
+                runCatching { dev.cannoli.igm.CanonicalButton.valueOf(canonicalName) }.getOrNull()
                 ?: continue
             val ordered = entries.entries
                 .mapNotNull { (key, value) ->
@@ -94,11 +94,11 @@ object MappingIniSerializer {
             ),
             bindings = bindings,
             menuConfirm = menu["confirm"]
-                ?.let { runCatching { CanonicalButton.valueOf(it) }.getOrNull() }
-                ?: CanonicalButton.BTN_EAST,
+                ?.let { runCatching { dev.cannoli.igm.CanonicalButton.valueOf(it) }.getOrNull() }
+                ?: dev.cannoli.igm.CanonicalButton.BTN_EAST,
             menuBack = menu["back"]
-                ?.let { runCatching { CanonicalButton.valueOf(it) }.getOrNull() }
-                ?: CanonicalButton.BTN_SOUTH,
+                ?.let { runCatching { dev.cannoli.igm.CanonicalButton.valueOf(it) }.getOrNull() }
+                ?: dev.cannoli.igm.CanonicalButton.BTN_SOUTH,
             glyphStyle = glyph["style"]
                 ?.let { runCatching { GlyphStyle.valueOf(it) }.getOrNull() }
                 ?: GlyphStyle.PLUMBER,

@@ -1,6 +1,5 @@
 package dev.cannoli.scorza.input.repo
 
-import dev.cannoli.scorza.input.CanonicalButton
 import dev.cannoli.scorza.input.DeviceMatchRule
 import dev.cannoli.scorza.input.DeviceMapping
 import dev.cannoli.scorza.input.InputBinding
@@ -23,7 +22,7 @@ class MappingRepositoryTest {
         id = id,
         displayName = id,
         match = DeviceMatchRule(name = id, vendorId = 1, productId = 2),
-        bindings = mapOf(CanonicalButton.BTN_SOUTH to listOf(InputBinding.Button(96))),
+        bindings = mapOf(dev.cannoli.igm.CanonicalButton.BTN_SOUTH to listOf(InputBinding.Button(96))),
         source = MappingSource.RETROARCH_AUTOCONFIG,
     )
 

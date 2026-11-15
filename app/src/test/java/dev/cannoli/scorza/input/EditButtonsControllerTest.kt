@@ -1,5 +1,6 @@
 package dev.cannoli.scorza.input
 
+import dev.cannoli.igm.CanonicalButton
 import dev.cannoli.scorza.input.repo.MappingRepository
 import org.junit.Assert.*
 import org.junit.Before
@@ -32,26 +33,29 @@ class EditButtonsControllerTest {
 
     @Test fun `start then key press finalizes after 500ms with Button binding`() {
         val template = emptyTemplate()
-        controller.startListening(template, CanonicalButton.BTN_SOUTH)
+        controller.startListening(template, dev.cannoli.igm.CanonicalButton.BTN_SOUTH)
         clockMs = 0
         controller.captureRawKeyEvent(96)
         clockMs = 500
         val finalized = controller.tickAndMaybeFinalize() ?: error("expected finalized template")
-        assertEquals(listOf(InputBinding.Button(96)), finalized.bindings[CanonicalButton.BTN_SOUTH])
+        assertEquals(
+            listOf(InputBinding.Button(96)),
+            finalized.bindings[dev.cannoli.igm.CanonicalButton.BTN_SOUTH]
+        )
         assertTrue(finalized.userEdited)
         assertNotNull(repo.findById("test"))
     }
 
     @Test fun `multiple sources within window produce one binding per source`() {
         val template = emptyTemplate()
-        controller.startListening(template, CanonicalButton.BTN_UP)
+        controller.startListening(template, dev.cannoli.igm.CanonicalButton.BTN_UP)
         clockMs = 0
         controller.captureRawKeyEvent(19)
         clockMs = 100
         controller.captureRawAxisEvent(mapOf(16 to -1f))
         clockMs = 500
         val finalized = controller.tickAndMaybeFinalize() ?: error("expected finalized")
-        val bindings = finalized.bindings[CanonicalButton.BTN_UP] ?: emptyList()
+        val bindings = finalized.bindings[dev.cannoli.igm.CanonicalButton.BTN_UP] ?: emptyList()
         assertEquals(2, bindings.size)
         assertTrue(bindings.any { it is InputBinding.Button && it.keyCode == 19 })
         assertTrue(bindings.any { it is InputBinding.Hat && it.axis == 16 })
@@ -59,7 +63,7 @@ class EditButtonsControllerTest {
 
     @Test fun `5s timeout cancels without saving`() {
         val template = emptyTemplate()
-        controller.startListening(template, CanonicalButton.BTN_SOUTH)
+        controller.startListening(template, dev.cannoli.igm.CanonicalButton.BTN_SOUTH)
         clockMs = 5001
         val result = controller.tickAndMaybeFinalize()
         assertNull(result)
@@ -68,7 +72,7 @@ class EditButtonsControllerTest {
 
     @Test fun `cancelListening discards pending events`() {
         val template = emptyTemplate()
-        controller.startListening(template, CanonicalButton.BTN_SOUTH)
+        controller.startListening(template, dev.cannoli.igm.CanonicalButton.BTN_SOUTH)
         controller.captureRawKeyEvent(96)
         controller.cancelListening()
         clockMs = 1000
@@ -79,68 +83,113 @@ class EditButtonsControllerTest {
     @Test fun `binding a key already used by another canonical swaps their bindings`() {
         val template = emptyTemplate().copy(
             bindings = mapOf(
-                CanonicalButton.BTN_SOUTH to listOf(InputBinding.Button(96)),
-                CanonicalButton.BTN_EAST to listOf(InputBinding.Button(97)),
+                dev.cannoli.igm.CanonicalButton.BTN_SOUTH to listOf(InputBinding.Button(96)),
+                dev.cannoli.igm.CanonicalButton.BTN_EAST to listOf(InputBinding.Button(97)),
             ),
         )
-        controller.startListening(template, CanonicalButton.BTN_SOUTH)
+        controller.startListening(template, dev.cannoli.igm.CanonicalButton.BTN_SOUTH)
         clockMs = 0
         controller.captureRawKeyEvent(97)
         clockMs = 500
         val finalized = controller.tickAndMaybeFinalize() ?: error("expected finalized")
-        assertEquals(listOf(InputBinding.Button(97)), finalized.bindings[CanonicalButton.BTN_SOUTH])
-        assertEquals(listOf(InputBinding.Button(96)), finalized.bindings[CanonicalButton.BTN_EAST])
+        assertEquals(
+            listOf(InputBinding.Button(97)),
+            finalized.bindings[dev.cannoli.igm.CanonicalButton.BTN_SOUTH]
+        )
+        assertEquals(
+            listOf(InputBinding.Button(96)),
+            finalized.bindings[dev.cannoli.igm.CanonicalButton.BTN_EAST]
+        )
     }
 
     @Test fun `binding a key used by another canonical clears the other when new slot was empty`() {
         val template = emptyTemplate().copy(
-            bindings = mapOf(CanonicalButton.BTN_EAST to listOf(InputBinding.Button(97))),
+            bindings = mapOf(
+                dev.cannoli.igm.CanonicalButton.BTN_EAST to listOf(
+                    InputBinding.Button(
+                        97
+                    )
+                )
+            ),
         )
-        controller.startListening(template, CanonicalButton.BTN_SOUTH)
+        controller.startListening(template, dev.cannoli.igm.CanonicalButton.BTN_SOUTH)
         clockMs = 0
         controller.captureRawKeyEvent(97)
         clockMs = 500
         val finalized = controller.tickAndMaybeFinalize() ?: error("expected finalized")
-        assertEquals(listOf(InputBinding.Button(97)), finalized.bindings[CanonicalButton.BTN_SOUTH])
-        assertEquals(emptyList<InputBinding>(), finalized.bindings[CanonicalButton.BTN_EAST])
+        assertEquals(
+            listOf(InputBinding.Button(97)),
+            finalized.bindings[dev.cannoli.igm.CanonicalButton.BTN_SOUTH]
+        )
+        assertEquals(
+            emptyList<InputBinding>(),
+            finalized.bindings[dev.cannoli.igm.CanonicalButton.BTN_EAST]
+        )
     }
 
     @Test fun `swap removes only conflicting input from previous owner with multi-bind`() {
         val template = emptyTemplate().copy(
             bindings = mapOf(
-                CanonicalButton.BTN_SOUTH to listOf(InputBinding.Button(96)),
-                CanonicalButton.BTN_EAST to listOf(InputBinding.Button(97), InputBinding.Button(98)),
+                dev.cannoli.igm.CanonicalButton.BTN_SOUTH to listOf(InputBinding.Button(96)),
+                dev.cannoli.igm.CanonicalButton.BTN_EAST to listOf(
+                    InputBinding.Button(97),
+                    InputBinding.Button(98)
+                ),
             ),
         )
-        controller.startListening(template, CanonicalButton.BTN_SOUTH)
+        controller.startListening(template, dev.cannoli.igm.CanonicalButton.BTN_SOUTH)
         clockMs = 0
         controller.captureRawKeyEvent(97)
         clockMs = 500
         val finalized = controller.tickAndMaybeFinalize() ?: error("expected finalized")
-        assertEquals(listOf(InputBinding.Button(97)), finalized.bindings[CanonicalButton.BTN_SOUTH])
-        val east = finalized.bindings[CanonicalButton.BTN_EAST] ?: emptyList()
-        assertTrue("expected old south binding restored to east", east.contains(InputBinding.Button(96)))
-        assertTrue("expected non-conflicting binding preserved", east.contains(InputBinding.Button(98)))
-        assertFalse("conflicting key 97 should be gone from east", east.contains(InputBinding.Button(97)))
+        assertEquals(
+            listOf(InputBinding.Button(97)),
+            finalized.bindings[dev.cannoli.igm.CanonicalButton.BTN_SOUTH]
+        )
+        val east = finalized.bindings[dev.cannoli.igm.CanonicalButton.BTN_EAST] ?: emptyList()
+        assertTrue(
+            "expected old south binding restored to east",
+            east.contains(InputBinding.Button(96))
+        )
+        assertTrue(
+            "expected non-conflicting binding preserved",
+            east.contains(InputBinding.Button(98))
+        )
+        assertFalse(
+            "conflicting key 97 should be gone from east",
+            east.contains(InputBinding.Button(97))
+        )
     }
 
     @Test fun `existing bindings on other canonicals are preserved`() {
         val template = emptyTemplate().copy(
-            bindings = mapOf(CanonicalButton.BTN_EAST to listOf(InputBinding.Button(97))),
+            bindings = mapOf(
+                dev.cannoli.igm.CanonicalButton.BTN_EAST to listOf(
+                    InputBinding.Button(
+                        97
+                    )
+                )
+            ),
         )
-        controller.startListening(template, CanonicalButton.BTN_SOUTH)
+        controller.startListening(template, dev.cannoli.igm.CanonicalButton.BTN_SOUTH)
         clockMs = 0
         controller.captureRawKeyEvent(96)
         clockMs = 500
         val finalized = controller.tickAndMaybeFinalize() ?: error("expected finalized")
-        assertEquals(listOf(InputBinding.Button(97)), finalized.bindings[CanonicalButton.BTN_EAST])
-        assertEquals(listOf(InputBinding.Button(96)), finalized.bindings[CanonicalButton.BTN_SOUTH])
+        assertEquals(
+            listOf(InputBinding.Button(97)),
+            finalized.bindings[dev.cannoli.igm.CanonicalButton.BTN_EAST]
+        )
+        assertEquals(
+            listOf(InputBinding.Button(96)),
+            finalized.bindings[dev.cannoli.igm.CanonicalButton.BTN_SOUTH]
+        )
     }
 
     @Test fun `digital axis capture does not displace existing analog stick binding on the same axis`() {
         val template = emptyTemplate().copy(
             bindings = mapOf(
-                CanonicalButton.BTN_L3 to listOf(
+                dev.cannoli.igm.CanonicalButton.BTN_L3 to listOf(
                     InputBinding.Axis(
                         axis = 0,
                         restingValue = 0f,
@@ -152,19 +201,19 @@ class EditButtonsControllerTest {
                 ),
             ),
         )
-        controller.startListening(template, CanonicalButton.BTN_RIGHT)
+        controller.startListening(template, dev.cannoli.igm.CanonicalButton.BTN_RIGHT)
         clockMs = 0
         controller.captureRawAxisEvent(mapOf(0 to 1f))
         clockMs = 500
         val finalized = controller.tickAndMaybeFinalize() ?: error("expected finalized")
 
-        val right = finalized.bindings[CanonicalButton.BTN_RIGHT] ?: emptyList()
+        val right = finalized.bindings[dev.cannoli.igm.CanonicalButton.BTN_RIGHT] ?: emptyList()
         assertEquals(1, right.size)
         val rightAxis = right.first() as InputBinding.Axis
         assertEquals(0, rightAxis.axis)
         assertEquals(AnalogRole.DIGITAL_BUTTON, rightAxis.analogRole)
 
-        val l3 = finalized.bindings[CanonicalButton.BTN_L3] ?: emptyList()
+        val l3 = finalized.bindings[dev.cannoli.igm.CanonicalButton.BTN_L3] ?: emptyList()
         assertEquals(1, l3.size)
         val l3Axis = l3.first() as InputBinding.Axis
         assertEquals(AnalogRole.LEFT_STICK_X, l3Axis.analogRole)

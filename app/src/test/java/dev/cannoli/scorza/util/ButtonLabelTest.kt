@@ -1,7 +1,6 @@
 package dev.cannoli.scorza.util
 
 import android.view.KeyEvent
-import dev.cannoli.scorza.input.CanonicalButton
 import dev.cannoli.scorza.input.DeviceMapping
 import dev.cannoli.scorza.input.DeviceMatchRule
 import dev.cannoli.scorza.input.GlyphStyle
@@ -20,10 +19,10 @@ class ButtonLabelTest {
         displayName = "Retroid Pocket Classic",
         match = DeviceMatchRule(),
         bindings = mapOf(
-            CanonicalButton.BTN_START to listOf(InputBinding.Button(KeyEvent.KEYCODE_BUTTON_SELECT)),
-            CanonicalButton.BTN_SELECT to listOf(InputBinding.Button(KeyEvent.KEYCODE_BUTTON_START)),
-            CanonicalButton.BTN_SOUTH to listOf(InputBinding.Button(KeyEvent.KEYCODE_BUTTON_A)),
-            CanonicalButton.BTN_UP to listOf(
+            dev.cannoli.igm.CanonicalButton.BTN_START to listOf(InputBinding.Button(KeyEvent.KEYCODE_BUTTON_SELECT)),
+            dev.cannoli.igm.CanonicalButton.BTN_SELECT to listOf(InputBinding.Button(KeyEvent.KEYCODE_BUTTON_START)),
+            dev.cannoli.igm.CanonicalButton.BTN_SOUTH to listOf(InputBinding.Button(KeyEvent.KEYCODE_BUTTON_A)),
+            dev.cannoli.igm.CanonicalButton.BTN_UP to listOf(
                 InputBinding.Hat(android.view.MotionEvent.AXIS_HAT_Y, HatDirection.UP),
             ),
         ),
@@ -37,11 +36,11 @@ class ButtonLabelTest {
         val mapping = flippedStartSelect()
 
         assertEquals(
-            CanonicalButton.BTN_START,
+            dev.cannoli.igm.CanonicalButton.BTN_START,
             canonicalForKeyCode(KeyEvent.KEYCODE_BUTTON_SELECT, mapping),
         )
         assertEquals(
-            CanonicalButton.BTN_SELECT,
+            dev.cannoli.igm.CanonicalButton.BTN_SELECT,
             canonicalForKeyCode(KeyEvent.KEYCODE_BUTTON_START, mapping),
         )
     }
@@ -49,7 +48,7 @@ class ButtonLabelTest {
     @Test
     fun `an unremapped key resolves to its usual canonical button`() {
         assertEquals(
-            CanonicalButton.BTN_SOUTH,
+            dev.cannoli.igm.CanonicalButton.BTN_SOUTH,
             canonicalForKeyCode(KeyEvent.KEYCODE_BUTTON_A, flippedStartSelect()),
         )
     }

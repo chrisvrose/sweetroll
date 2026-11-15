@@ -4,7 +4,6 @@ import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
 import dagger.hilt.android.scopes.ActivityScoped
-import dev.cannoli.scorza.input.CanonicalButton
 import javax.inject.Inject
 
 /**
@@ -24,7 +23,7 @@ class MenuNavigationPoller @Inject constructor(
 ) {
 
     private val handler = Handler(Looper.getMainLooper())
-    private var heldDir: CanonicalButton? = null
+    private var heldDir: dev.cannoli.igm.CanonicalButton? = null
     private var nextFireAt = 0L
     private var running = false
 
@@ -65,27 +64,27 @@ class MenuNavigationPoller @Inject constructor(
         nextFireAt = 0L
     }
 
-    private fun readDir(): CanonicalButton? {
-        if (anyPortHas(CanonicalButton.BTN_UP)) return CanonicalButton.BTN_UP
-        if (anyPortHas(CanonicalButton.BTN_DOWN)) return CanonicalButton.BTN_DOWN
-        if (anyPortHas(CanonicalButton.BTN_LEFT)) return CanonicalButton.BTN_LEFT
-        if (anyPortHas(CanonicalButton.BTN_RIGHT)) return CanonicalButton.BTN_RIGHT
+    private fun readDir(): dev.cannoli.igm.CanonicalButton? {
+        if (anyPortHas(dev.cannoli.igm.CanonicalButton.BTN_UP)) return dev.cannoli.igm.CanonicalButton.BTN_UP
+        if (anyPortHas(dev.cannoli.igm.CanonicalButton.BTN_DOWN)) return dev.cannoli.igm.CanonicalButton.BTN_DOWN
+        if (anyPortHas(dev.cannoli.igm.CanonicalButton.BTN_LEFT)) return dev.cannoli.igm.CanonicalButton.BTN_LEFT
+        if (anyPortHas(dev.cannoli.igm.CanonicalButton.BTN_RIGHT)) return dev.cannoli.igm.CanonicalButton.BTN_RIGHT
         return null
     }
 
-    private fun anyPortHas(btn: CanonicalButton): Boolean {
+    private fun anyPortHas(btn: dev.cannoli.igm.CanonicalButton): Boolean {
         for (port in 0 until MAX_PORTS) {
             if (portRouter.isCanonicalPressedAt(port, btn)) return true
         }
         return false
     }
 
-    private fun fire(dir: CanonicalButton) {
+    private fun fire(dir: dev.cannoli.igm.CanonicalButton) {
         when (dir) {
-            CanonicalButton.BTN_UP -> dispatcher.onUp()
-            CanonicalButton.BTN_DOWN -> dispatcher.onDown()
-            CanonicalButton.BTN_LEFT -> dispatcher.onLeft()
-            CanonicalButton.BTN_RIGHT -> dispatcher.onRight()
+            dev.cannoli.igm.CanonicalButton.BTN_UP -> dispatcher.onUp()
+            dev.cannoli.igm.CanonicalButton.BTN_DOWN -> dispatcher.onDown()
+            dev.cannoli.igm.CanonicalButton.BTN_LEFT -> dispatcher.onLeft()
+            dev.cannoli.igm.CanonicalButton.BTN_RIGHT -> dispatcher.onRight()
             else -> Unit
         }
     }

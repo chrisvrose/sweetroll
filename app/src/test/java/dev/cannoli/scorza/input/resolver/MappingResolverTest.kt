@@ -1,7 +1,6 @@
 package dev.cannoli.scorza.input.resolver
 
 import dev.cannoli.scorza.input.autoconfig.RetroArchCfgEntry
-import dev.cannoli.scorza.input.CanonicalButton
 import dev.cannoli.scorza.input.ConnectedDevice
 import dev.cannoli.scorza.input.DeviceMatchRule
 import dev.cannoli.scorza.input.DeviceMapping
@@ -53,7 +52,13 @@ class MappingResolverTest {
             id = "stadia_user",
             displayName = "Stadia (user)",
             match = DeviceMatchRule(vendorId = 6353, productId = 37888),
-            bindings = mapOf(CanonicalButton.BTN_SOUTH to listOf(InputBinding.Button(96))),
+            bindings = mapOf(
+                dev.cannoli.igm.CanonicalButton.BTN_SOUTH to listOf(
+                    InputBinding.Button(
+                        96
+                    )
+                )
+            ),
             source = MappingSource.USER_WIZARD,
             userEdited = true,
         )
@@ -73,7 +78,13 @@ class MappingResolverTest {
                 id = "older",
                 displayName = "older",
                 match = DeviceMatchRule(name = "Stadia Controller"),
-                bindings = mapOf(CanonicalButton.BTN_SOUTH to listOf(InputBinding.Button(96))),
+                bindings = mapOf(
+                    dev.cannoli.igm.CanonicalButton.BTN_SOUTH to listOf(
+                        InputBinding.Button(
+                            96
+                        )
+                    )
+                ),
                 source = MappingSource.RETROARCH_AUTOCONFIG,
             )
         )
@@ -83,7 +94,13 @@ class MappingResolverTest {
                 id = "newer",
                 displayName = "newer",
                 match = DeviceMatchRule(name = "Stadia Controller"),
-                bindings = mapOf(CanonicalButton.BTN_SOUTH to listOf(InputBinding.Button(96))),
+                bindings = mapOf(
+                    dev.cannoli.igm.CanonicalButton.BTN_SOUTH to listOf(
+                        InputBinding.Button(
+                            96
+                        )
+                    )
+                ),
                 source = MappingSource.RETROARCH_AUTOCONFIG,
             )
         )
@@ -125,7 +142,13 @@ class MappingResolverTest {
             id = "disk_wins",
             displayName = "Disk wins",
             match = DeviceMatchRule(vendorId = 6353, productId = 37888),
-            bindings = mapOf(CanonicalButton.BTN_SOUTH to listOf(InputBinding.Button(96))),
+            bindings = mapOf(
+                dev.cannoli.igm.CanonicalButton.BTN_SOUTH to listOf(
+                    InputBinding.Button(
+                        96
+                    )
+                )
+            ),
             source = MappingSource.RETROARCH_AUTOCONFIG,
         )
         repo.save(saved)
@@ -191,7 +214,13 @@ class MappingResolverTest {
                 productId = 37888,
                 descriptor = "first-session-descriptor",
             ),
-            bindings = mapOf(CanonicalButton.BTN_SOUTH to listOf(InputBinding.Button(96))),
+            bindings = mapOf(
+                dev.cannoli.igm.CanonicalButton.BTN_SOUTH to listOf(
+                    InputBinding.Button(
+                        96
+                    )
+                )
+            ),
             source = MappingSource.USER_WIZARD,
             userEdited = true,
         )
@@ -220,7 +249,13 @@ class MappingResolverTest {
                     productId = 8201,
                     descriptor = "first-pad-descriptor",
                 ),
-                bindings = mapOf(CanonicalButton.BTN_SOUTH to listOf(InputBinding.Button(96))),
+                bindings = mapOf(
+                    dev.cannoli.igm.CanonicalButton.BTN_SOUTH to listOf(
+                        InputBinding.Button(
+                            96
+                        )
+                    )
+                ),
                 source = MappingSource.USER_WIZARD,
                 userEdited = true,
             )
@@ -257,7 +292,13 @@ class MappingResolverTest {
                     vendorId = null,
                     productId = null,
                 ),
-                bindings = mapOf(CanonicalButton.BTN_SOUTH to listOf(InputBinding.Button(96))),
+                bindings = mapOf(
+                    dev.cannoli.igm.CanonicalButton.BTN_SOUTH to listOf(
+                        InputBinding.Button(
+                            96
+                        )
+                    )
+                ),
                 source = MappingSource.USER_WIZARD,
                 userEdited = true,
             )
@@ -295,7 +336,13 @@ class MappingResolverTest {
                     vendorId = 6353,
                     productId = 37888,
                 ),
-                bindings = mapOf(CanonicalButton.BTN_SOUTH to listOf(InputBinding.Button(96))),
+                bindings = mapOf(
+                    dev.cannoli.igm.CanonicalButton.BTN_SOUTH to listOf(
+                        InputBinding.Button(
+                            96
+                        )
+                    )
+                ),
                 source = MappingSource.ANDROID_DEFAULT,
                 userEdited = false,
             )
@@ -328,7 +375,13 @@ class MappingResolverTest {
                     vendorId = 6353,
                     productId = 37888,
                 ),
-                bindings = mapOf(CanonicalButton.BTN_SOUTH to listOf(InputBinding.Button(96))),
+                bindings = mapOf(
+                    dev.cannoli.igm.CanonicalButton.BTN_SOUTH to listOf(
+                        InputBinding.Button(
+                            96
+                        )
+                    )
+                ),
                 source = MappingSource.USER_WIZARD,
                 userEdited = true,
             )
@@ -392,9 +445,12 @@ class MappingResolverTest {
 
         val resolved = resolver.resolve(phantomDualsense)
 
-        assertEquals(dev.cannoli.scorza.input.CanonicalButton.BTN_SOUTH, resolved.mapping.menuConfirm)
+        assertEquals(dev.cannoli.igm.CanonicalButton.BTN_SOUTH, resolved.mapping.menuConfirm)
         assertEquals(dev.cannoli.scorza.input.GlyphStyle.SHAPES, resolved.mapping.glyphStyle)
-        assertEquals(dev.cannoli.scorza.input.MappingSource.RETROARCH_AUTOCONFIG, resolved.mapping.source)
+        assertEquals(
+            dev.cannoli.scorza.input.MappingSource.RETROARCH_AUTOCONFIG,
+            resolved.mapping.source
+        )
     }
 
     @Test
@@ -412,7 +468,13 @@ class MappingResolverTest {
                     vendorId = 6353,
                     productId = 37888,
                 ),
-                bindings = mapOf(CanonicalButton.BTN_SOUTH to listOf(InputBinding.Button(96))),
+                bindings = mapOf(
+                    dev.cannoli.igm.CanonicalButton.BTN_SOUTH to listOf(
+                        InputBinding.Button(
+                            96
+                        )
+                    )
+                ),
                 source = MappingSource.ANDROID_DEFAULT,
                 userEdited = true,
                 glyphStyle = dev.cannoli.scorza.input.GlyphStyle.REDMOND,

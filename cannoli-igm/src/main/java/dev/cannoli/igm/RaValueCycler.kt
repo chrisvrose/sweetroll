@@ -15,7 +15,7 @@ object RaValueCycler {
                 else opts[((i + direction) % opts.size + opts.size) % opts.size]
             }
         }
-        RaSettingType.INT -> stepNumeric(setting, direction)?.let { it.toLong().toString() }
+        RaSettingType.INT -> stepNumeric(setting, direction)?.toLong()?.toString()
         RaSettingType.FLOAT -> stepNumeric(setting, direction)?.let { formatFloat(it) }
         RaSettingType.STRING_RO -> null
     }

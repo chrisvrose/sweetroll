@@ -1,7 +1,6 @@
 package dev.cannoli.scorza.input.runtime
 
 import dev.cannoli.scorza.input.AnalogRole
-import dev.cannoli.scorza.input.CanonicalButton
 import dev.cannoli.scorza.input.DeviceMapping
 import dev.cannoli.scorza.input.HatDirection
 import dev.cannoli.scorza.input.InputBinding
@@ -19,9 +18,9 @@ class PortEvaluator(
         data class Hat(val axis: Int, val direction: HatDirection) : BindingKey
     }
 
-    private val pressed = mutableSetOf<CanonicalButton>()
+    private val pressed = mutableSetOf<dev.cannoli.igm.CanonicalButton>()
     private val analog = mutableMapOf<AnalogRole, Float>()
-    private val asserters = mutableMapOf<CanonicalButton, MutableSet<BindingKey>>()
+    private val asserters = mutableMapOf<dev.cannoli.igm.CanonicalButton, MutableSet<BindingKey>>()
 
     fun evaluateKeyDown(keyCode: Int, isAndroidRepeat: Boolean): List<CanonicalEvent> {
         if (isAndroidRepeat) return emptyList()
@@ -94,7 +93,7 @@ class PortEvaluator(
         return deltas
     }
 
-    fun currentlyPressed(): Set<CanonicalButton> = pressed.toSet()
+    fun currentlyPressed(): Set<dev.cannoli.igm.CanonicalButton> = pressed.toSet()
 
     fun analogValue(role: AnalogRole): Float = analog[role] ?: 0f
 
@@ -107,8 +106,8 @@ class PortEvaluator(
         return false
     }
 
-    fun canonicalsHeldByKeyCode(keyCode: Int): List<CanonicalButton> {
-        val out = mutableListOf<CanonicalButton>()
+    fun canonicalsHeldByKeyCode(keyCode: Int): List<dev.cannoli.igm.CanonicalButton> {
+        val out = mutableListOf<dev.cannoli.igm.CanonicalButton>()
         for ((canonical, bindings) in mapping.bindings) {
             if (canonical !in pressed) continue
             val asserts = bindings.any { it is InputBinding.Button && it.keyCode == keyCode }
@@ -130,7 +129,7 @@ class PortEvaluator(
         return deltas
     }
 
-    private inline fun forEachBinding(action: (CanonicalButton, InputBinding) -> Unit) {
+    private inline fun forEachBinding(action: (dev.cannoli.igm.CanonicalButton, InputBinding) -> Unit) {
         for ((canonical, bindings) in mapping.bindings) {
             for (binding in bindings) action(canonical, binding)
         }
@@ -139,7 +138,7 @@ class PortEvaluator(
     private fun directionOf(binding: InputBinding.Axis): Int =
         sign(binding.activeMax - binding.restingValue).toInt()
 
-    private fun assertSource(canonical: CanonicalButton, source: BindingKey): Boolean {
+    private fun assertSource(canonical: dev.cannoli.igm.CanonicalButton, source: BindingKey): Boolean {
         val set = asserters.getOrPut(canonical) { mutableSetOf() }
         val firstAssertion = set.isEmpty()
         set.add(source)
@@ -150,7 +149,7 @@ class PortEvaluator(
         return false
     }
 
-    private fun releaseSource(canonical: CanonicalButton, source: BindingKey): Boolean {
+    private fun releaseSource(canonical: dev.cannoli.igm.CanonicalButton, source: BindingKey): Boolean {
         val set = asserters[canonical] ?: return false
         if (!set.remove(source)) return false
         if (set.isEmpty()) {

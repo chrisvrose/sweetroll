@@ -24,7 +24,6 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.cannoli.scorza.R
-import dev.cannoli.scorza.input.CanonicalButton
 import dev.cannoli.scorza.input.DeviceMapping
 import dev.cannoli.scorza.input.GlyphStyle
 import dev.cannoli.scorza.input.HatDirection
@@ -46,9 +45,9 @@ import dev.cannoli.ui.theme.Radius
 import dev.cannoli.ui.theme.Spacing
 
 private val PROTECTED_CANONICALS = setOf(
-    CanonicalButton.BTN_UP, CanonicalButton.BTN_DOWN,
-    CanonicalButton.BTN_LEFT, CanonicalButton.BTN_RIGHT,
-    CanonicalButton.BTN_SOUTH, CanonicalButton.BTN_EAST,
+    dev.cannoli.igm.CanonicalButton.BTN_UP, dev.cannoli.igm.CanonicalButton.BTN_DOWN,
+    dev.cannoli.igm.CanonicalButton.BTN_LEFT, dev.cannoli.igm.CanonicalButton.BTN_RIGHT,
+    dev.cannoli.igm.CanonicalButton.BTN_SOUTH, dev.cannoli.igm.CanonicalButton.BTN_EAST,
 )
 
 @Composable
@@ -107,7 +106,7 @@ fun EditButtonsScreen(
                 return@ScreenBackground
             }
 
-            val entries = CanonicalButton.entries.toList()
+            val entries = dev.cannoli.igm.CanonicalButton.entries.toList()
 
             Column(
                 modifier = Modifier
@@ -144,12 +143,13 @@ fun EditButtonsScreen(
                 }
             }
 
-            val selectedCanonical = entries.getOrNull(screen.selectedIndex.coerceIn(0, entries.size - 1))
+            val selectedCanonical =
+                entries.getOrNull(screen.selectedIndex.coerceIn(0, entries.size - 1))
             val canUnmap = !isListening && selectedCanonical != null
-                && selectedCanonical !in PROTECTED_CANONICALS
-                && !mapping.bindings[selectedCanonical].isNullOrEmpty()
+                    && selectedCanonical !in PROTECTED_CANONICALS
+                    && !mapping.bindings[selectedCanonical].isNullOrEmpty()
             val bottomLeft = if (isListening) emptyList()
-                else listOf(buttonStyle.back to stringResource(R.string.label_back))
+            else listOf(buttonStyle.back to stringResource(R.string.label_back))
             val bottomRight = if (isListening) {
                 emptyList()
             } else {
@@ -183,7 +183,12 @@ fun EditButtonsScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.widthIn(max = 480.dp).fillMaxWidth(),
                 ) {
-                    val targetLabel2 = listening?.let { friendlyCanonicalLabel(it, mapping?.glyphStyle ?: GlyphStyle.PLUMBER) }.orEmpty()
+                    val targetLabel2 = listening?.let {
+                        friendlyCanonicalLabel(
+                            it,
+                            mapping?.glyphStyle ?: GlyphStyle.PLUMBER
+                        )
+                    }.orEmpty()
                     Text(
                         text = targetLabel2,
                         style = MaterialTheme.typography.bodyLarge.copy(
@@ -222,7 +227,7 @@ fun EditButtonsScreen(
 }
 
 @Composable
-private fun friendlyCanonicalLabel(button: CanonicalButton, style: GlyphStyle): String =
+private fun friendlyCanonicalLabel(button: dev.cannoli.igm.CanonicalButton, style: GlyphStyle): String =
     dev.cannoli.scorza.util.canonicalLabel(LocalContext.current, button, style)
 
 @Composable

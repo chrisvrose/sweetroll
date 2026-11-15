@@ -1,12 +1,11 @@
 package dev.cannoli.scorza.input.hints
 
 import android.content.Context
-import dev.cannoli.scorza.input.CanonicalButton
 import dev.cannoli.scorza.input.GlyphStyle
 import org.json.JSONObject
 
 data class ControllerHint(
-    val menuConfirm: CanonicalButton,
+    val menuConfirm: dev.cannoli.igm.CanonicalButton,
     val glyphStyle: GlyphStyle,
 )
 
@@ -128,7 +127,7 @@ class ControllerHintTable internal constructor(
         }
 
         private fun parseHint(obj: JSONObject): ControllerHint = ControllerHint(
-            menuConfirm = CanonicalButton.valueOf(obj.getString("menuConfirm")),
+            menuConfirm = dev.cannoli.igm.CanonicalButton.valueOf(obj.getString("menuConfirm")),
             glyphStyle = GlyphStyle.valueOf(obj.getString("glyphStyle")),
         )
     }

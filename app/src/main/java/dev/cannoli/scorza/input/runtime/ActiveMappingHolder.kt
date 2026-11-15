@@ -1,5 +1,6 @@
 package dev.cannoli.scorza.input.runtime
 
+import dev.cannoli.igm.CanonicalButton
 import dev.cannoli.scorza.input.DeviceMapping
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,7 +22,7 @@ class ActiveMappingHolder {
 
 fun DeviceMapping?.confirmButton(): dev.cannoli.ui.ConfirmButton = when {
     this == null -> dev.cannoli.ui.ConfirmButton.EAST
-    this.menuConfirm == dev.cannoli.scorza.input.CanonicalButton.BTN_EAST -> dev.cannoli.ui.ConfirmButton.EAST
+    this.menuConfirm == CanonicalButton.BTN_EAST -> dev.cannoli.ui.ConfirmButton.EAST
     else -> dev.cannoli.ui.ConfirmButton.SOUTH
 }
 

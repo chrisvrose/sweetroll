@@ -1,7 +1,6 @@
 package dev.cannoli.scorza.input.resolver
 
 import android.view.KeyEvent
-import dev.cannoli.scorza.input.CanonicalButton
 import dev.cannoli.scorza.input.ConnectedDevice
 import dev.cannoli.scorza.input.InputBinding
 import org.junit.Assert.assertEquals
@@ -23,7 +22,7 @@ class DevKeyboardMappingTest {
 
     @Test
     fun every_canonical_button_is_reachable_from_the_keyboard() {
-        val missing = CanonicalButton.entries.filter { it !in DevKeyboardMapping.BINDINGS }
+        val missing = dev.cannoli.igm.CanonicalButton.entries.filter { it !in DevKeyboardMapping.BINDINGS }
         assertTrue("unbound canonicals: $missing", missing.isEmpty())
     }
 
@@ -41,14 +40,14 @@ class DevKeyboardMappingTest {
     fun enter_confirms_and_escape_goes_back() {
         val mapping = DevKeyboardMapping.create(device)
 
-        assertEquals(CanonicalButton.BTN_SOUTH, mapping.menuConfirm)
-        assertEquals(CanonicalButton.BTN_EAST, mapping.menuBack)
+        assertEquals(dev.cannoli.igm.CanonicalButton.BTN_SOUTH, mapping.menuConfirm)
+        assertEquals(dev.cannoli.igm.CanonicalButton.BTN_EAST, mapping.menuBack)
         assertTrue(
-            mapping.bindings[CanonicalButton.BTN_SOUTH]
+            mapping.bindings[dev.cannoli.igm.CanonicalButton.BTN_SOUTH]
                 ?.contains(InputBinding.Button(KeyEvent.KEYCODE_ENTER)) == true
         )
         assertTrue(
-            mapping.bindings[CanonicalButton.BTN_EAST]
+            mapping.bindings[dev.cannoli.igm.CanonicalButton.BTN_EAST]
                 ?.contains(InputBinding.Button(KeyEvent.KEYCODE_ESCAPE)) == true
         )
     }
@@ -58,7 +57,7 @@ class DevKeyboardMappingTest {
         val mapping = DevKeyboardMapping.create(device)
 
         assertTrue(
-            mapping.bindings[CanonicalButton.BTN_EAST]
+            mapping.bindings[dev.cannoli.igm.CanonicalButton.BTN_EAST]
                 ?.contains(InputBinding.Button(KeyEvent.KEYCODE_BACK)) == true
         )
     }
@@ -67,10 +66,10 @@ class DevKeyboardMappingTest {
     fun arrow_keys_drive_navigation() {
         val mapping = DevKeyboardMapping.create(device)
         val expected = mapOf(
-            CanonicalButton.BTN_UP to KeyEvent.KEYCODE_DPAD_UP,
-            CanonicalButton.BTN_DOWN to KeyEvent.KEYCODE_DPAD_DOWN,
-            CanonicalButton.BTN_LEFT to KeyEvent.KEYCODE_DPAD_LEFT,
-            CanonicalButton.BTN_RIGHT to KeyEvent.KEYCODE_DPAD_RIGHT,
+            dev.cannoli.igm.CanonicalButton.BTN_UP to KeyEvent.KEYCODE_DPAD_UP,
+            dev.cannoli.igm.CanonicalButton.BTN_DOWN to KeyEvent.KEYCODE_DPAD_DOWN,
+            dev.cannoli.igm.CanonicalButton.BTN_LEFT to KeyEvent.KEYCODE_DPAD_LEFT,
+            dev.cannoli.igm.CanonicalButton.BTN_RIGHT to KeyEvent.KEYCODE_DPAD_RIGHT,
         )
 
         for ((button, keyCode) in expected) {

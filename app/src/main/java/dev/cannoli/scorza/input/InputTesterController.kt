@@ -4,6 +4,7 @@ import android.os.Handler
 import android.os.Looper
 import android.view.KeyEvent
 import android.view.MotionEvent
+import dev.cannoli.igm.CanonicalButton
 import dev.cannoli.scorza.input.runtime.ActiveMappingHolder
 import dev.cannoli.scorza.input.runtime.PortRouter
 import dev.cannoli.scorza.ui.viewmodel.DeviceInfo
@@ -99,12 +100,12 @@ class InputTesterController(
         val rightX = mostActive(mappingStickValue(mapping, AnalogRole.RIGHT_STICK_X, event), event.getAxisValue(MotionEvent.AXIS_Z))
         val rightY = mostActive(mappingStickValue(mapping, AnalogRole.RIGHT_STICK_Y, event), event.getAxisValue(MotionEvent.AXIS_RZ))
         val leftTrigger = maxOf(
-            mappingTriggerDisplayValue(mapping, CanonicalButton.BTN_L2, event) ?: 0f,
+            mappingTriggerDisplayValue(mapping, dev.cannoli.igm.CanonicalButton.BTN_L2, event) ?: 0f,
             event.getAxisValue(MotionEvent.AXIS_LTRIGGER).coerceIn(0f, 1f),
             event.getAxisValue(MotionEvent.AXIS_BRAKE).coerceIn(0f, 1f),
         )
         val rightTrigger = maxOf(
-            mappingTriggerDisplayValue(mapping, CanonicalButton.BTN_R2, event) ?: 0f,
+            mappingTriggerDisplayValue(mapping, dev.cannoli.igm.CanonicalButton.BTN_R2, event) ?: 0f,
             event.getAxisValue(MotionEvent.AXIS_RTRIGGER).coerceIn(0f, 1f),
             event.getAxisValue(MotionEvent.AXIS_GAS).coerceIn(0f, 1f),
         )
@@ -179,23 +180,23 @@ class InputTesterController(
             bindings.any { it is InputBinding.Button && it.keyCode == keyCode }
         }?.key ?: return null
         return when (canonical) {
-            CanonicalButton.BTN_SOUTH -> "btn_south"
-            CanonicalButton.BTN_EAST -> "btn_east"
-            CanonicalButton.BTN_WEST -> "btn_west"
-            CanonicalButton.BTN_NORTH -> "btn_north"
-            CanonicalButton.BTN_L -> "btn_l"
-            CanonicalButton.BTN_R -> "btn_r"
-            CanonicalButton.BTN_L2 -> "btn_l2"
-            CanonicalButton.BTN_R2 -> "btn_r2"
-            CanonicalButton.BTN_L3 -> "btn_l3"
-            CanonicalButton.BTN_R3 -> "btn_r3"
-            CanonicalButton.BTN_START -> "btn_start"
-            CanonicalButton.BTN_SELECT -> "btn_select"
-            CanonicalButton.BTN_MENU -> "btn_menu"
-            CanonicalButton.BTN_UP -> "btn_up"
-            CanonicalButton.BTN_DOWN -> "btn_down"
-            CanonicalButton.BTN_LEFT -> "btn_left"
-            CanonicalButton.BTN_RIGHT -> "btn_right"
+            dev.cannoli.igm.CanonicalButton.BTN_SOUTH -> "btn_south"
+            dev.cannoli.igm.CanonicalButton.BTN_EAST -> "btn_east"
+            dev.cannoli.igm.CanonicalButton.BTN_WEST -> "btn_west"
+            dev.cannoli.igm.CanonicalButton.BTN_NORTH -> "btn_north"
+            dev.cannoli.igm.CanonicalButton.BTN_L -> "btn_l"
+            dev.cannoli.igm.CanonicalButton.BTN_R -> "btn_r"
+            dev.cannoli.igm.CanonicalButton.BTN_L2 -> "btn_l2"
+            dev.cannoli.igm.CanonicalButton.BTN_R2 -> "btn_r2"
+            dev.cannoli.igm.CanonicalButton.BTN_L3 -> "btn_l3"
+            dev.cannoli.igm.CanonicalButton.BTN_R3 -> "btn_r3"
+            dev.cannoli.igm.CanonicalButton.BTN_START -> "btn_start"
+            dev.cannoli.igm.CanonicalButton.BTN_SELECT -> "btn_select"
+            dev.cannoli.igm.CanonicalButton.BTN_MENU -> "btn_menu"
+            dev.cannoli.igm.CanonicalButton.BTN_UP -> "btn_up"
+            dev.cannoli.igm.CanonicalButton.BTN_DOWN -> "btn_down"
+            dev.cannoli.igm.CanonicalButton.BTN_LEFT -> "btn_left"
+            dev.cannoli.igm.CanonicalButton.BTN_RIGHT -> "btn_right"
         }
     }
 

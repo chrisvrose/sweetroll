@@ -1,7 +1,6 @@
 package dev.cannoli.scorza.input.resolver
 
 import android.view.KeyEvent
-import dev.cannoli.scorza.input.CanonicalButton
 import dev.cannoli.scorza.input.ConnectedDevice
 import dev.cannoli.scorza.input.DeviceMapping
 import dev.cannoli.scorza.input.DeviceMatchRule
@@ -24,28 +23,37 @@ object DevKeyboardMapping {
 
     const val DISPLAY_NAME = "Dev Keyboard"
 
-    val BINDINGS: Map<CanonicalButton, List<Int>> = mapOf(
-        CanonicalButton.BTN_UP to listOf(KeyEvent.KEYCODE_DPAD_UP),
-        CanonicalButton.BTN_DOWN to listOf(KeyEvent.KEYCODE_DPAD_DOWN),
-        CanonicalButton.BTN_LEFT to listOf(KeyEvent.KEYCODE_DPAD_LEFT),
-        CanonicalButton.BTN_RIGHT to listOf(KeyEvent.KEYCODE_DPAD_RIGHT),
-        CanonicalButton.BTN_SOUTH to listOf(KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_NUMPAD_ENTER),
+    val BINDINGS: Map<dev.cannoli.igm.CanonicalButton, List<Int>> = mapOf(
+        dev.cannoli.igm.CanonicalButton.BTN_UP to listOf(KeyEvent.KEYCODE_DPAD_UP),
+        dev.cannoli.igm.CanonicalButton.BTN_DOWN to listOf(KeyEvent.KEYCODE_DPAD_DOWN),
+        dev.cannoli.igm.CanonicalButton.BTN_LEFT to listOf(KeyEvent.KEYCODE_DPAD_LEFT),
+        dev.cannoli.igm.CanonicalButton.BTN_RIGHT to listOf(KeyEvent.KEYCODE_DPAD_RIGHT),
+        dev.cannoli.igm.CanonicalButton.BTN_SOUTH to listOf(
+            KeyEvent.KEYCODE_ENTER,
+            KeyEvent.KEYCODE_NUMPAD_ENTER
+        ),
         // KEYCODE_BACK alongside ESCAPE: some AVD keyboard layouts deliver Esc as BACK.
-        CanonicalButton.BTN_EAST to listOf(KeyEvent.KEYCODE_ESCAPE, KeyEvent.KEYCODE_BACK),
+        dev.cannoli.igm.CanonicalButton.BTN_EAST to listOf(
+            KeyEvent.KEYCODE_ESCAPE,
+            KeyEvent.KEYCODE_BACK
+        ),
         // Y and X sit on the buttons the PLUMBER glyphs label Y and X, so the key pressed matches
         // the letter the BottomBar shows. Tab and Backspace were tried here first and never
         // arrived: the view hierarchy consumes them for focus traversal before onKeyDown runs.
-        CanonicalButton.BTN_WEST to listOf(KeyEvent.KEYCODE_Y),
-        CanonicalButton.BTN_NORTH to listOf(KeyEvent.KEYCODE_X),
-        CanonicalButton.BTN_L to listOf(KeyEvent.KEYCODE_L),
-        CanonicalButton.BTN_R to listOf(KeyEvent.KEYCODE_R),
-        CanonicalButton.BTN_L2 to listOf(KeyEvent.KEYCODE_SEMICOLON),
-        CanonicalButton.BTN_R2 to listOf(KeyEvent.KEYCODE_T),
-        CanonicalButton.BTN_L3 to listOf(KeyEvent.KEYCODE_Z),
-        CanonicalButton.BTN_R3 to listOf(KeyEvent.KEYCODE_C),
-        CanonicalButton.BTN_START to listOf(KeyEvent.KEYCODE_SPACE),
-        CanonicalButton.BTN_SELECT to listOf(KeyEvent.KEYCODE_SHIFT_LEFT, KeyEvent.KEYCODE_SHIFT_RIGHT),
-        CanonicalButton.BTN_MENU to listOf(KeyEvent.KEYCODE_M),
+        dev.cannoli.igm.CanonicalButton.BTN_WEST to listOf(KeyEvent.KEYCODE_Y),
+        dev.cannoli.igm.CanonicalButton.BTN_NORTH to listOf(KeyEvent.KEYCODE_X),
+        dev.cannoli.igm.CanonicalButton.BTN_L to listOf(KeyEvent.KEYCODE_L),
+        dev.cannoli.igm.CanonicalButton.BTN_R to listOf(KeyEvent.KEYCODE_R),
+        dev.cannoli.igm.CanonicalButton.BTN_L2 to listOf(KeyEvent.KEYCODE_SEMICOLON),
+        dev.cannoli.igm.CanonicalButton.BTN_R2 to listOf(KeyEvent.KEYCODE_T),
+        dev.cannoli.igm.CanonicalButton.BTN_L3 to listOf(KeyEvent.KEYCODE_Z),
+        dev.cannoli.igm.CanonicalButton.BTN_R3 to listOf(KeyEvent.KEYCODE_C),
+        dev.cannoli.igm.CanonicalButton.BTN_START to listOf(KeyEvent.KEYCODE_SPACE),
+        dev.cannoli.igm.CanonicalButton.BTN_SELECT to listOf(
+            KeyEvent.KEYCODE_SHIFT_LEFT,
+            KeyEvent.KEYCODE_SHIFT_RIGHT
+        ),
+        dev.cannoli.igm.CanonicalButton.BTN_MENU to listOf(KeyEvent.KEYCODE_M),
     )
 
     fun create(device: ConnectedDevice): DeviceMapping = DeviceMapping(
@@ -53,8 +61,8 @@ object DevKeyboardMapping {
         displayName = DISPLAY_NAME,
         match = DeviceMatchRule(name = device.name.takeIf { it.isNotEmpty() }),
         bindings = BINDINGS.mapValues { (_, keyCodes) -> keyCodes.map { InputBinding.Button(it) } },
-        menuConfirm = CanonicalButton.BTN_SOUTH,
-        menuBack = CanonicalButton.BTN_EAST,
+        menuConfirm = dev.cannoli.igm.CanonicalButton.BTN_SOUTH,
+        menuBack = dev.cannoli.igm.CanonicalButton.BTN_EAST,
         glyphStyle = GlyphStyle.PLUMBER,
         source = MappingSource.ANDROID_DEFAULT,
     )

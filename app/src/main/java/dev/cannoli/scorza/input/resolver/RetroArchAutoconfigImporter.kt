@@ -5,7 +5,6 @@ import dev.cannoli.scorza.input.autoconfig.HatRef
 import dev.cannoli.scorza.input.autoconfig.RetroArchCfgEntry
 import dev.cannoli.scorza.input.HatDirection
 import dev.cannoli.scorza.input.AnalogRole
-import dev.cannoli.scorza.input.CanonicalButton
 import dev.cannoli.scorza.input.ConnectedDevice
 import dev.cannoli.scorza.input.DeviceMatchRule
 import dev.cannoli.scorza.input.DeviceMapping
@@ -15,24 +14,24 @@ import dev.cannoli.scorza.input.hints.ControllerHintTable
 
 object RetroArchAutoconfigImporter {
 
-    private val BTN_TO_CANONICAL: Map<String, CanonicalButton> = mapOf(
-        "b_btn" to CanonicalButton.BTN_SOUTH,
-        "a_btn" to CanonicalButton.BTN_EAST,
-        "y_btn" to CanonicalButton.BTN_WEST,
-        "x_btn" to CanonicalButton.BTN_NORTH,
-        "l_btn" to CanonicalButton.BTN_L,
-        "r_btn" to CanonicalButton.BTN_R,
-        "l2_btn" to CanonicalButton.BTN_L2,
-        "r2_btn" to CanonicalButton.BTN_R2,
-        "l3_btn" to CanonicalButton.BTN_L3,
-        "r3_btn" to CanonicalButton.BTN_R3,
-        "start_btn" to CanonicalButton.BTN_START,
-        "select_btn" to CanonicalButton.BTN_SELECT,
-        "up_btn" to CanonicalButton.BTN_UP,
-        "down_btn" to CanonicalButton.BTN_DOWN,
-        "left_btn" to CanonicalButton.BTN_LEFT,
-        "right_btn" to CanonicalButton.BTN_RIGHT,
-        "menu_toggle_btn" to CanonicalButton.BTN_MENU,
+    private val BTN_TO_CANONICAL: Map<String, dev.cannoli.igm.CanonicalButton> = mapOf(
+        "b_btn" to dev.cannoli.igm.CanonicalButton.BTN_SOUTH,
+        "a_btn" to dev.cannoli.igm.CanonicalButton.BTN_EAST,
+        "y_btn" to dev.cannoli.igm.CanonicalButton.BTN_WEST,
+        "x_btn" to dev.cannoli.igm.CanonicalButton.BTN_NORTH,
+        "l_btn" to dev.cannoli.igm.CanonicalButton.BTN_L,
+        "r_btn" to dev.cannoli.igm.CanonicalButton.BTN_R,
+        "l2_btn" to dev.cannoli.igm.CanonicalButton.BTN_L2,
+        "r2_btn" to dev.cannoli.igm.CanonicalButton.BTN_R2,
+        "l3_btn" to dev.cannoli.igm.CanonicalButton.BTN_L3,
+        "r3_btn" to dev.cannoli.igm.CanonicalButton.BTN_R3,
+        "start_btn" to dev.cannoli.igm.CanonicalButton.BTN_START,
+        "select_btn" to dev.cannoli.igm.CanonicalButton.BTN_SELECT,
+        "up_btn" to dev.cannoli.igm.CanonicalButton.BTN_UP,
+        "down_btn" to dev.cannoli.igm.CanonicalButton.BTN_DOWN,
+        "left_btn" to dev.cannoli.igm.CanonicalButton.BTN_LEFT,
+        "right_btn" to dev.cannoli.igm.CanonicalButton.BTN_RIGHT,
+        "menu_toggle_btn" to dev.cannoli.igm.CanonicalButton.BTN_MENU,
     )
 
     fun import(
@@ -41,7 +40,7 @@ object RetroArchAutoconfigImporter {
         hints: ControllerHintTable,
         persistenceDescriptor: String? = null,
     ): DeviceMapping {
-        val bindings = mutableMapOf<CanonicalButton, MutableList<InputBinding>>()
+        val bindings = mutableMapOf<dev.cannoli.igm.CanonicalButton, MutableList<InputBinding>>()
 
         for ((raKey, keyCode) in entry.buttonBindings) {
             val canonical = BTN_TO_CANONICAL[raKey] ?: continue
@@ -80,7 +79,8 @@ object RetroArchAutoconfigImporter {
         }
 
         // Seed BTN_MENU with KEYCODE_BACK (4) + KEYCODE_BUTTON_MODE (110) if cfg didn't supply one.
-        val menuBindings = bindings.getOrPut(CanonicalButton.BTN_MENU) { mutableListOf() }
+        val menuBindings =
+            bindings.getOrPut(dev.cannoli.igm.CanonicalButton.BTN_MENU) { mutableListOf() }
         for (defaultKey in listOf(4, 110)) {
             if (menuBindings.none { it is InputBinding.Button && it.keyCode == defaultKey }) {
                 menuBindings.add(InputBinding.Button(defaultKey))
@@ -122,10 +122,10 @@ object RetroArchAutoconfigImporter {
         )
     }
 
-    private fun oppositeOf(button: CanonicalButton): CanonicalButton = when (button) {
-        CanonicalButton.BTN_EAST -> CanonicalButton.BTN_SOUTH
-        CanonicalButton.BTN_SOUTH -> CanonicalButton.BTN_EAST
-        else -> CanonicalButton.BTN_SOUTH
+    private fun oppositeOf(button: dev.cannoli.igm.CanonicalButton): dev.cannoli.igm.CanonicalButton = when (button) {
+        dev.cannoli.igm.CanonicalButton.BTN_EAST -> dev.cannoli.igm.CanonicalButton.BTN_SOUTH
+        dev.cannoli.igm.CanonicalButton.BTN_SOUTH -> dev.cannoli.igm.CanonicalButton.BTN_EAST
+        else -> dev.cannoli.igm.CanonicalButton.BTN_SOUTH
     }
 
     private fun mapHatRefToAxisAndDirection(ref: HatRef): Pair<Int, HatDirection>? {
@@ -141,13 +141,13 @@ object RetroArchAutoconfigImporter {
     private const val ANDROID_AXIS_HAT_X: Int = 15
     private const val ANDROID_AXIS_HAT_Y: Int = 16
 
-    private fun mapAxisKeyToCanonicalAndRole(key: String): Pair<CanonicalButton, AnalogRole>? = when (key) {
-        "l2_axis" -> CanonicalButton.BTN_L2 to AnalogRole.DIGITAL_BUTTON
-        "r2_axis" -> CanonicalButton.BTN_R2 to AnalogRole.DIGITAL_BUTTON
-        "l_x_plus_axis", "l_x_minus_axis" -> CanonicalButton.BTN_L3 to AnalogRole.LEFT_STICK_X
-        "l_y_plus_axis", "l_y_minus_axis" -> CanonicalButton.BTN_L3 to AnalogRole.LEFT_STICK_Y
-        "r_x_plus_axis", "r_x_minus_axis" -> CanonicalButton.BTN_R3 to AnalogRole.RIGHT_STICK_X
-        "r_y_plus_axis", "r_y_minus_axis" -> CanonicalButton.BTN_R3 to AnalogRole.RIGHT_STICK_Y
+    private fun mapAxisKeyToCanonicalAndRole(key: String): Pair<dev.cannoli.igm.CanonicalButton, AnalogRole>? = when (key) {
+        "l2_axis" -> dev.cannoli.igm.CanonicalButton.BTN_L2 to AnalogRole.DIGITAL_BUTTON
+        "r2_axis" -> dev.cannoli.igm.CanonicalButton.BTN_R2 to AnalogRole.DIGITAL_BUTTON
+        "l_x_plus_axis", "l_x_minus_axis" -> dev.cannoli.igm.CanonicalButton.BTN_L3 to AnalogRole.LEFT_STICK_X
+        "l_y_plus_axis", "l_y_minus_axis" -> dev.cannoli.igm.CanonicalButton.BTN_L3 to AnalogRole.LEFT_STICK_Y
+        "r_x_plus_axis", "r_x_minus_axis" -> dev.cannoli.igm.CanonicalButton.BTN_R3 to AnalogRole.RIGHT_STICK_X
+        "r_y_plus_axis", "r_y_minus_axis" -> dev.cannoli.igm.CanonicalButton.BTN_R3 to AnalogRole.RIGHT_STICK_Y
         else -> null
     }
 

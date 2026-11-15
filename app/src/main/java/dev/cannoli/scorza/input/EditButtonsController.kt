@@ -1,6 +1,7 @@
 package dev.cannoli.scorza.input
 
 import dagger.hilt.android.scopes.ActivityScoped
+import dev.cannoli.igm.CanonicalButton
 import dev.cannoli.scorza.input.repo.MappingRepository
 import dev.cannoli.scorza.input.runtime.ActiveMappingHolder
 import dev.cannoli.scorza.input.runtime.PortRouter
@@ -21,7 +22,7 @@ class EditButtonsController @Inject constructor(
     }
 
     private var pendingMapping: DeviceMapping? = null
-    private var pendingCanonical: CanonicalButton? = null
+    private var pendingCanonical: dev.cannoli.igm.CanonicalButton? = null
     private var startedAtMillis: Long = 0
     private var firstEventAtMillis: Long = -1
     private val capturedKeys = linkedSetOf<Int>()
@@ -29,7 +30,7 @@ class EditButtonsController @Inject constructor(
 
     val isListening: Boolean get() = pendingCanonical != null
 
-    fun startListening(mapping: DeviceMapping, canonical: CanonicalButton) {
+    fun startListening(mapping: DeviceMapping, canonical: dev.cannoli.igm.CanonicalButton) {
         pendingMapping = mapping
         pendingCanonical = canonical
         startedAtMillis = clock()

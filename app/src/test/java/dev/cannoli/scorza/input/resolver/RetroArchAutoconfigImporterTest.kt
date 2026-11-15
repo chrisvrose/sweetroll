@@ -6,7 +6,6 @@ import dev.cannoli.scorza.input.autoconfig.HatRef
 import dev.cannoli.scorza.input.autoconfig.RetroArchCfgEntry
 import dev.cannoli.scorza.input.HatDirection
 import dev.cannoli.scorza.input.AnalogRole
-import dev.cannoli.scorza.input.CanonicalButton
 import dev.cannoli.scorza.input.ConnectedDevice
 import dev.cannoli.scorza.input.GlyphStyle
 import dev.cannoli.scorza.input.InputBinding
@@ -45,10 +44,22 @@ class RetroArchAutoconfigImporterTest {
         )
         val t = RetroArchAutoconfigImporter.import(entry, device, defaultHints)
         assertEquals(MappingSource.RETROARCH_AUTOCONFIG, t.source)
-        assertEquals(InputBinding.Button(96), t.bindings[CanonicalButton.BTN_SOUTH]!![0])
-        assertEquals(InputBinding.Button(97), t.bindings[CanonicalButton.BTN_EAST]!![0])
-        assertEquals(InputBinding.Button(19), t.bindings[CanonicalButton.BTN_UP]!![0])
-        assertEquals(InputBinding.Button(108), t.bindings[CanonicalButton.BTN_START]!![0])
+        assertEquals(
+            InputBinding.Button(96),
+            t.bindings[dev.cannoli.igm.CanonicalButton.BTN_SOUTH]!![0]
+        )
+        assertEquals(
+            InputBinding.Button(97),
+            t.bindings[dev.cannoli.igm.CanonicalButton.BTN_EAST]!![0]
+        )
+        assertEquals(
+            InputBinding.Button(19),
+            t.bindings[dev.cannoli.igm.CanonicalButton.BTN_UP]!![0]
+        )
+        assertEquals(
+            InputBinding.Button(108),
+            t.bindings[dev.cannoli.igm.CanonicalButton.BTN_START]!![0]
+        )
     }
 
     @Test
@@ -59,7 +70,7 @@ class RetroArchAutoconfigImporterTest {
             axisBindings = mapOf("l2_axis" to AxisRef(axis = 17, direction = +1)),
         )
         val t = RetroArchAutoconfigImporter.import(entry, device, defaultHints)
-        val l2 = t.bindings[CanonicalButton.BTN_L2]!![0] as InputBinding.Axis
+        val l2 = t.bindings[dev.cannoli.igm.CanonicalButton.BTN_L2]!![0] as InputBinding.Axis
         assertEquals(17, l2.axis)
         // Trigger axes are unipolar: rest at 0, full press at +1 for direction=+1. A bipolar
         // mapping would normalize axis-at-rest (0) to 0.5, past the 0.5 digital threshold,
@@ -84,7 +95,7 @@ class RetroArchAutoconfigImporterTest {
         )
         val t = RetroArchAutoconfigImporter.import(entry, device, defaultHints)
         // Stick X is bound under BTN_L3 with role LEFT_STICK_X.
-        val lxBinding = t.bindings[CanonicalButton.BTN_L3]?.firstOrNull { it is InputBinding.Axis }
+        val lxBinding = t.bindings[dev.cannoli.igm.CanonicalButton.BTN_L3]?.firstOrNull { it is InputBinding.Axis }
         assertNotNull(lxBinding)
     }
 
@@ -116,10 +127,10 @@ class RetroArchAutoconfigImporterTest {
         )
         val t = RetroArchAutoconfigImporter.import(entry, device, defaultHints)
 
-        val up = t.bindings[CanonicalButton.BTN_UP]?.firstOrNull()
-        val down = t.bindings[CanonicalButton.BTN_DOWN]?.firstOrNull()
-        val left = t.bindings[CanonicalButton.BTN_LEFT]?.firstOrNull()
-        val right = t.bindings[CanonicalButton.BTN_RIGHT]?.firstOrNull()
+        val up = t.bindings[dev.cannoli.igm.CanonicalButton.BTN_UP]?.firstOrNull()
+        val down = t.bindings[dev.cannoli.igm.CanonicalButton.BTN_DOWN]?.firstOrNull()
+        val left = t.bindings[dev.cannoli.igm.CanonicalButton.BTN_LEFT]?.firstOrNull()
+        val right = t.bindings[dev.cannoli.igm.CanonicalButton.BTN_RIGHT]?.firstOrNull()
 
         org.junit.Assert.assertTrue(up is InputBinding.Hat && up.axis == 16 && up.direction == HatDirection.UP)
         org.junit.Assert.assertTrue(down is InputBinding.Hat && down.axis == 16 && down.direction == HatDirection.DOWN)
@@ -146,8 +157,8 @@ class RetroArchAutoconfigImporterTest {
             sourceMask = 0, connectedAtMillis = 0,
         )
         val tpl = RetroArchAutoconfigImporter.import(entry, device, table)
-        assertEquals(CanonicalButton.BTN_SOUTH, tpl.menuConfirm)
-        assertEquals(CanonicalButton.BTN_EAST, tpl.menuBack)
+        assertEquals(dev.cannoli.igm.CanonicalButton.BTN_SOUTH, tpl.menuConfirm)
+        assertEquals(dev.cannoli.igm.CanonicalButton.BTN_EAST, tpl.menuBack)
         assertEquals(GlyphStyle.SHAPES, tpl.glyphStyle)
     }
 }

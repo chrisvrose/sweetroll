@@ -1,6 +1,5 @@
 package dev.cannoli.scorza.input.runtime
 
-import dev.cannoli.scorza.input.CanonicalButton
 import dev.cannoli.scorza.input.ConnectedDevice
 import dev.cannoli.scorza.input.DeviceMatchRule
 import dev.cannoli.scorza.input.DeviceMapping
@@ -20,13 +19,13 @@ class InputDispatcherTest {
         displayName = "Western",
         match = DeviceMatchRule(),
         bindings = mapOf(
-            CanonicalButton.BTN_SOUTH to listOf(InputBinding.Button(96)),
-            CanonicalButton.BTN_EAST to listOf(InputBinding.Button(97)),
-            CanonicalButton.BTN_UP to listOf(InputBinding.Button(19)),
-            CanonicalButton.BTN_SELECT to listOf(InputBinding.Button(109)),
+            dev.cannoli.igm.CanonicalButton.BTN_SOUTH to listOf(InputBinding.Button(96)),
+            dev.cannoli.igm.CanonicalButton.BTN_EAST to listOf(InputBinding.Button(97)),
+            dev.cannoli.igm.CanonicalButton.BTN_UP to listOf(InputBinding.Button(19)),
+            dev.cannoli.igm.CanonicalButton.BTN_SELECT to listOf(InputBinding.Button(109)),
         ),
-        menuConfirm = CanonicalButton.BTN_EAST,
-        menuBack = CanonicalButton.BTN_SOUTH,
+        menuConfirm = dev.cannoli.igm.CanonicalButton.BTN_EAST,
+        menuBack = dev.cannoli.igm.CanonicalButton.BTN_SOUTH,
         glyphStyle = GlyphStyle.REDMOND,
         source = MappingSource.RETROARCH_AUTOCONFIG,
     )
@@ -36,11 +35,11 @@ class InputDispatcherTest {
         displayName = "Nintendo",
         match = DeviceMatchRule(),
         bindings = mapOf(
-            CanonicalButton.BTN_SOUTH to listOf(InputBinding.Button(96)),
-            CanonicalButton.BTN_EAST to listOf(InputBinding.Button(97)),
+            dev.cannoli.igm.CanonicalButton.BTN_SOUTH to listOf(InputBinding.Button(96)),
+            dev.cannoli.igm.CanonicalButton.BTN_EAST to listOf(InputBinding.Button(97)),
         ),
-        menuConfirm = CanonicalButton.BTN_SOUTH,
-        menuBack = CanonicalButton.BTN_EAST,
+        menuConfirm = dev.cannoli.igm.CanonicalButton.BTN_SOUTH,
+        menuBack = dev.cannoli.igm.CanonicalButton.BTN_EAST,
         glyphStyle = GlyphStyle.PLUMBER,
         source = MappingSource.RETROARCH_AUTOCONFIG,
     )
@@ -200,9 +199,15 @@ class InputDispatcherTest {
     @Test
     fun motion_event_axis_crossing_threshold_fires_callback() {
         val template = westernTemplate().copy(
-            bindings = westernTemplate().bindings + (CanonicalButton.BTN_L2 to listOf(InputBinding.Axis(
-                axis = 17, restingValue = -1f, activeMin = 0f, activeMax = 1f, digitalThreshold = 0.5f,
-            )))
+            bindings = westernTemplate().bindings + (dev.cannoli.igm.CanonicalButton.BTN_L2 to listOf(
+                InputBinding.Axis(
+                    axis = 17,
+                    restingValue = -1f,
+                    activeMin = 0f,
+                    activeMax = 1f,
+                    digitalThreshold = 0.5f,
+                )
+            ))
         )
         val router = PortRouter()
         router.onConnect(device(7), template)
@@ -242,9 +247,15 @@ class InputDispatcherTest {
     @Test
     fun first_motion_axis_press_activates_and_assigns_port() {
         val template = westernTemplate().copy(
-            bindings = westernTemplate().bindings + (CanonicalButton.BTN_L2 to listOf(InputBinding.Axis(
-                axis = 17, restingValue = -1f, activeMin = 0f, activeMax = 1f, digitalThreshold = 0.5f,
-            )))
+            bindings = westernTemplate().bindings + (dev.cannoli.igm.CanonicalButton.BTN_L2 to listOf(
+                InputBinding.Axis(
+                    axis = 17,
+                    restingValue = -1f,
+                    activeMin = 0f,
+                    activeMax = 1f,
+                    digitalThreshold = 0.5f,
+                )
+            ))
         )
         val router = PortRouter()
         router.onConnect(device(7), template)
@@ -286,7 +297,7 @@ class InputDispatcherTest {
         // for the synthesized KEYCODE_DPAD_UP are dropped because nav auto-repeat is owned by
         // MenuNavigationPoller (held-state poll, source-agnostic).
         val template = westernTemplate().copy(
-            bindings = westernTemplate().bindings + (CanonicalButton.BTN_UP to listOf(
+            bindings = westernTemplate().bindings + (dev.cannoli.igm.CanonicalButton.BTN_UP to listOf(
                 InputBinding.Hat(axis = 16, direction = HatDirection.UP, threshold = 0.5f)
             ))
         )
@@ -394,15 +405,15 @@ class InputDispatcherTest {
             displayName = "Hat Pad",
             match = DeviceMatchRule(),
             bindings = mapOf(
-                CanonicalButton.BTN_UP to listOf(
+                dev.cannoli.igm.CanonicalButton.BTN_UP to listOf(
                     InputBinding.Hat(
                         axis = android.view.MotionEvent.AXIS_HAT_Y,
                         direction = HatDirection.UP,
                     )
                 ),
             ),
-            menuConfirm = CanonicalButton.BTN_SOUTH,
-            menuBack = CanonicalButton.BTN_EAST,
+            menuConfirm = dev.cannoli.igm.CanonicalButton.BTN_SOUTH,
+            menuBack = dev.cannoli.igm.CanonicalButton.BTN_EAST,
             glyphStyle = GlyphStyle.PLUMBER,
             source = MappingSource.RETROARCH_AUTOCONFIG,
         )
@@ -423,7 +434,7 @@ class InputDispatcherTest {
             displayName = "Hybrid Pad",
             match = DeviceMatchRule(),
             bindings = mapOf(
-                CanonicalButton.BTN_UP to listOf(
+                dev.cannoli.igm.CanonicalButton.BTN_UP to listOf(
                     InputBinding.Button(19),
                     InputBinding.Hat(
                         axis = android.view.MotionEvent.AXIS_HAT_Y,
@@ -431,8 +442,8 @@ class InputDispatcherTest {
                     ),
                 ),
             ),
-            menuConfirm = CanonicalButton.BTN_SOUTH,
-            menuBack = CanonicalButton.BTN_EAST,
+            menuConfirm = dev.cannoli.igm.CanonicalButton.BTN_SOUTH,
+            menuBack = dev.cannoli.igm.CanonicalButton.BTN_EAST,
             glyphStyle = GlyphStyle.PLUMBER,
             source = MappingSource.RETROARCH_AUTOCONFIG,
         )
@@ -451,13 +462,13 @@ class InputDispatcherTest {
         displayName = "North",
         match = DeviceMatchRule(),
         bindings = mapOf(
-            CanonicalButton.BTN_SOUTH to listOf(InputBinding.Button(96)),
-            CanonicalButton.BTN_EAST to listOf(InputBinding.Button(97)),
-            CanonicalButton.BTN_NORTH to listOf(InputBinding.Button(99)),
-            CanonicalButton.BTN_SELECT to listOf(InputBinding.Button(109)),
+            dev.cannoli.igm.CanonicalButton.BTN_SOUTH to listOf(InputBinding.Button(96)),
+            dev.cannoli.igm.CanonicalButton.BTN_EAST to listOf(InputBinding.Button(97)),
+            dev.cannoli.igm.CanonicalButton.BTN_NORTH to listOf(InputBinding.Button(99)),
+            dev.cannoli.igm.CanonicalButton.BTN_SELECT to listOf(InputBinding.Button(109)),
         ),
-        menuConfirm = CanonicalButton.BTN_EAST,
-        menuBack = CanonicalButton.BTN_SOUTH,
+        menuConfirm = dev.cannoli.igm.CanonicalButton.BTN_EAST,
+        menuBack = dev.cannoli.igm.CanonicalButton.BTN_SOUTH,
         glyphStyle = GlyphStyle.REDMOND,
         source = MappingSource.RETROARCH_AUTOCONFIG,
     )
@@ -505,7 +516,7 @@ class InputDispatcherTest {
             displayName = "Hybrid Pad",
             match = DeviceMatchRule(),
             bindings = mapOf(
-                CanonicalButton.BTN_UP to listOf(
+                dev.cannoli.igm.CanonicalButton.BTN_UP to listOf(
                     InputBinding.Button(19),
                     InputBinding.Hat(
                         axis = android.view.MotionEvent.AXIS_HAT_Y,
@@ -513,8 +524,8 @@ class InputDispatcherTest {
                     ),
                 ),
             ),
-            menuConfirm = CanonicalButton.BTN_SOUTH,
-            menuBack = CanonicalButton.BTN_EAST,
+            menuConfirm = dev.cannoli.igm.CanonicalButton.BTN_SOUTH,
+            menuBack = dev.cannoli.igm.CanonicalButton.BTN_EAST,
             glyphStyle = GlyphStyle.PLUMBER,
             source = MappingSource.RETROARCH_AUTOCONFIG,
         )
@@ -557,7 +568,9 @@ class InputDispatcherTest {
     @Test
     fun dpad_down_release_fires_onDownRelease_via_keycode() {
         val template = westernTemplate().copy(
-            bindings = westernTemplate().bindings + (CanonicalButton.BTN_DOWN to listOf(InputBinding.Button(20)))
+            bindings = westernTemplate().bindings + (dev.cannoli.igm.CanonicalButton.BTN_DOWN to listOf(
+                InputBinding.Button(20)
+            ))
         )
         val (d, _, _) = setup(template)
         var down = 0
@@ -577,12 +590,15 @@ class InputDispatcherTest {
             displayName = "Hat Pad",
             match = DeviceMatchRule(),
             bindings = mapOf(
-                CanonicalButton.BTN_UP to listOf(
-                    InputBinding.Hat(axis = android.view.MotionEvent.AXIS_HAT_Y, direction = HatDirection.UP)
+                dev.cannoli.igm.CanonicalButton.BTN_UP to listOf(
+                    InputBinding.Hat(
+                        axis = android.view.MotionEvent.AXIS_HAT_Y,
+                        direction = HatDirection.UP
+                    )
                 ),
             ),
-            menuConfirm = CanonicalButton.BTN_SOUTH,
-            menuBack = CanonicalButton.BTN_EAST,
+            menuConfirm = dev.cannoli.igm.CanonicalButton.BTN_SOUTH,
+            menuBack = dev.cannoli.igm.CanonicalButton.BTN_EAST,
             glyphStyle = GlyphStyle.PLUMBER,
             source = MappingSource.RETROARCH_AUTOCONFIG,
         )

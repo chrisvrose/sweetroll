@@ -1,6 +1,6 @@
 package dev.cannoli.scorza.input.resolver
 
-import dev.cannoli.scorza.input.CanonicalButton
+import dev.cannoli.igm.CanonicalButton
 import dev.cannoli.scorza.input.ConnectedDevice
 import dev.cannoli.scorza.input.DeviceMatchRule
 import dev.cannoli.scorza.input.DeviceMapping

@@ -7,7 +7,6 @@ import android.os.Handler
 import android.os.Looper
 import android.view.InputDevice
 import androidx.annotation.VisibleForTesting
-import dev.cannoli.scorza.input.CanonicalButton
 import dev.cannoli.scorza.input.ConnectedDevice
 import dev.cannoli.scorza.input.hints.ControllerHintTable
 import dev.cannoli.scorza.input.resolver.DevKeyboardMapping
@@ -402,7 +401,7 @@ class ControllerBridge(
         dev.cannoli.scorza.util.InputLog.write(
             "  hint-rebind: id=${connected.androidDeviceId} via $source -> confirm=${hint.menuConfirm} glyph=${hint.glyphStyle}"
         )
-        val menuBack = if (hint.menuConfirm == CanonicalButton.BTN_EAST) CanonicalButton.BTN_SOUTH else CanonicalButton.BTN_EAST
+        val menuBack = if (hint.menuConfirm == dev.cannoli.igm.CanonicalButton.BTN_EAST) dev.cannoli.igm.CanonicalButton.BTN_SOUTH else dev.cannoli.igm.CanonicalButton.BTN_EAST
         return mapping.copy(
             menuConfirm = hint.menuConfirm,
             menuBack = menuBack,

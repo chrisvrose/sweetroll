@@ -1,8 +1,8 @@
 package dev.cannoli.scorza.util
 
 import android.content.Context
+import dev.cannoli.igm.CanonicalButton
 import dev.cannoli.scorza.R
-import dev.cannoli.scorza.input.CanonicalButton
 import dev.cannoli.scorza.input.DeviceMapping
 import dev.cannoli.scorza.input.GlyphStyle
 import dev.cannoli.scorza.input.InputBinding

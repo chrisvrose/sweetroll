@@ -1,7 +1,6 @@
 package dev.cannoli.scorza.input.runtime
 
 import dev.cannoli.scorza.input.AnalogRole
-import dev.cannoli.scorza.input.CanonicalButton
 import dev.cannoli.scorza.input.ConnectedDevice
 import dev.cannoli.scorza.input.DeviceMatchRule
 import dev.cannoli.scorza.input.DeviceMapping
@@ -9,7 +8,6 @@ import dev.cannoli.scorza.input.InputBinding
 import dev.cannoli.scorza.input.MappingSource
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -33,7 +31,7 @@ class PortRouterTest {
         id = "t",
         displayName = "T",
         match = DeviceMatchRule(),
-        bindings = mapOf(CanonicalButton.BTN_SOUTH to listOf(InputBinding.Button(96))),
+        bindings = mapOf(dev.cannoli.igm.CanonicalButton.BTN_SOUTH to listOf(InputBinding.Button(96))),
         excludeFromGameplay = excluded,
         source = MappingSource.RETROARCH_AUTOCONFIG,
     )
@@ -247,8 +245,8 @@ class PortRouterTest {
         // The default template fixture only binds BTN_SOUTH to keycode 96.
         val ev = r.evaluatorFor(1)!!
         ev.evaluateKeyDown(96, isAndroidRepeat = false)
-        assertEquals(true, r.isCanonicalPressedAt(0, CanonicalButton.BTN_SOUTH))
-        assertEquals(false, r.isCanonicalPressedAt(0, CanonicalButton.BTN_EAST))
+        assertEquals(true, r.isCanonicalPressedAt(0, dev.cannoli.igm.CanonicalButton.BTN_SOUTH))
+        assertEquals(false, r.isCanonicalPressedAt(0, dev.cannoli.igm.CanonicalButton.BTN_EAST))
     }
 
     @Test
@@ -278,11 +276,13 @@ class PortRouterTest {
             displayName = "T",
             match = DeviceMatchRule(),
             bindings = mapOf(
-                CanonicalButton.BTN_L3 to listOf(InputBinding.Axis(
-                    axis = 0, restingValue = 0f, activeMin = -1f, activeMax = 1f,
-                    digitalThreshold = 0.5f,
-                    analogRole = AnalogRole.LEFT_STICK_X,
-                )),
+                dev.cannoli.igm.CanonicalButton.BTN_L3 to listOf(
+                    InputBinding.Axis(
+                        axis = 0, restingValue = 0f, activeMin = -1f, activeMax = 1f,
+                        digitalThreshold = 0.5f,
+                        analogRole = AnalogRole.LEFT_STICK_X,
+                    )
+                ),
             ),
             source = MappingSource.RETROARCH_AUTOCONFIG,
         )

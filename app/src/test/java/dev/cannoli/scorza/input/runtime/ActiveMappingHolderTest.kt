@@ -1,6 +1,5 @@
 package dev.cannoli.scorza.input.runtime
 
-import dev.cannoli.scorza.input.CanonicalButton
 import dev.cannoli.scorza.input.DeviceMatchRule
 import dev.cannoli.scorza.input.DeviceMapping
 import dev.cannoli.scorza.input.InputBinding
@@ -15,7 +14,7 @@ class ActiveMappingHolderTest {
         id = id,
         displayName = id,
         match = DeviceMatchRule(),
-        bindings = mapOf(CanonicalButton.BTN_SOUTH to listOf(InputBinding.Button(96))),
+        bindings = mapOf(dev.cannoli.igm.CanonicalButton.BTN_SOUTH to listOf(InputBinding.Button(96))),
         source = MappingSource.RETROARCH_AUTOCONFIG,
     )
 

@@ -1,7 +1,6 @@
 package dev.cannoli.scorza.input.runtime
 
 import dev.cannoli.scorza.input.AnalogRole
-import dev.cannoli.scorza.input.CanonicalButton
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -26,13 +25,13 @@ class MotionDeltasTest {
 
     @Test
     fun pressed_delta_is_a_digital_change() {
-        val deltas = listOf<CanonicalEvent>(CanonicalEvent.Pressed(CanonicalButton.BTN_UP))
+        val deltas = listOf<CanonicalEvent>(CanonicalEvent.Pressed(dev.cannoli.igm.CanonicalButton.BTN_UP))
         assertTrue(MotionDeltas.anyDigitalChange(deltas))
     }
 
     @Test
     fun released_delta_is_a_digital_change() {
-        val deltas = listOf<CanonicalEvent>(CanonicalEvent.Released(CanonicalButton.BTN_DOWN))
+        val deltas = listOf<CanonicalEvent>(CanonicalEvent.Released(dev.cannoli.igm.CanonicalButton.BTN_DOWN))
         assertTrue(MotionDeltas.anyDigitalChange(deltas))
     }
 
@@ -40,7 +39,7 @@ class MotionDeltasTest {
     fun mixed_analog_and_pressed_is_a_digital_change() {
         val deltas = listOf<CanonicalEvent>(
             CanonicalEvent.AnalogChanged(AnalogRole.LEFT_STICK_X, 0.5f),
-            CanonicalEvent.Pressed(CanonicalButton.BTN_UP),
+            CanonicalEvent.Pressed(dev.cannoli.igm.CanonicalButton.BTN_UP),
         )
         assertTrue(MotionDeltas.anyDigitalChange(deltas))
     }

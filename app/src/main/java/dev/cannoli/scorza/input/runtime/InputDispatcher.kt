@@ -2,7 +2,6 @@ package dev.cannoli.scorza.input.runtime
 
 import android.view.KeyEvent
 import android.view.MotionEvent
-import dev.cannoli.scorza.input.CanonicalButton
 import dev.cannoli.scorza.input.DeviceMapping
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -131,15 +130,15 @@ class InputDispatcher @Inject constructor(
                 for (delta in deltas) {
                     if (delta !is CanonicalEvent.Released) continue
                     when (delta.button) {
-                        CanonicalButton.BTN_SELECT -> { onSelectUp(); fired = true }
-                        CanonicalButton.BTN_NORTH -> { onNorthUp(); fired = true }
-                        CanonicalButton.BTN_SOUTH, CanonicalButton.BTN_EAST -> {
+                        dev.cannoli.igm.CanonicalButton.BTN_SELECT -> { onSelectUp(); fired = true }
+                        dev.cannoli.igm.CanonicalButton.BTN_NORTH -> { onNorthUp(); fired = true }
+                        dev.cannoli.igm.CanonicalButton.BTN_SOUTH, dev.cannoli.igm.CanonicalButton.BTN_EAST -> {
                             if (mapping.menuConfirm == delta.button) { onConfirmUp(); fired = true }
                         }
-                        CanonicalButton.BTN_UP -> { onUpRelease(); fired = true }
-                        CanonicalButton.BTN_DOWN -> { onDownRelease(); fired = true }
-                        CanonicalButton.BTN_LEFT -> { onLeftRelease(); fired = true }
-                        CanonicalButton.BTN_RIGHT -> { onRightRelease(); fired = true }
+                        dev.cannoli.igm.CanonicalButton.BTN_UP -> { onUpRelease(); fired = true }
+                        dev.cannoli.igm.CanonicalButton.BTN_DOWN -> { onDownRelease(); fired = true }
+                        dev.cannoli.igm.CanonicalButton.BTN_LEFT -> { onLeftRelease(); fired = true }
+                        dev.cannoli.igm.CanonicalButton.BTN_RIGHT -> { onRightRelease(); fired = true }
                         else -> {}
                     }
                 }
@@ -162,11 +161,11 @@ class InputDispatcher @Inject constructor(
                 if (dispatchPressed(delta.button, mapping)) fired = true
             } else if (delta is CanonicalEvent.Released) {
                 when (delta.button) {
-                    CanonicalButton.BTN_SELECT -> { onSelectUp(); fired = true }
-                    CanonicalButton.BTN_UP -> { onUpRelease(); fired = true }
-                    CanonicalButton.BTN_DOWN -> { onDownRelease(); fired = true }
-                    CanonicalButton.BTN_LEFT -> { onLeftRelease(); fired = true }
-                    CanonicalButton.BTN_RIGHT -> { onRightRelease(); fired = true }
+                    dev.cannoli.igm.CanonicalButton.BTN_SELECT -> { onSelectUp(); fired = true }
+                    dev.cannoli.igm.CanonicalButton.BTN_UP -> { onUpRelease(); fired = true }
+                    dev.cannoli.igm.CanonicalButton.BTN_DOWN -> { onDownRelease(); fired = true }
+                    dev.cannoli.igm.CanonicalButton.BTN_LEFT -> { onLeftRelease(); fired = true }
+                    dev.cannoli.igm.CanonicalButton.BTN_RIGHT -> { onRightRelease(); fired = true }
                     else -> {}
                 }
             }
@@ -180,44 +179,44 @@ class InputDispatcher @Inject constructor(
         }
     }
 
-    private fun dpadFallbackForRepeat(evaluator: PortEvaluator, keyCode: Int): List<CanonicalButton> {
+    private fun dpadFallbackForRepeat(evaluator: PortEvaluator, keyCode: Int): List<dev.cannoli.igm.CanonicalButton> {
         val canonical = when (keyCode) {
-            KeyEvent.KEYCODE_DPAD_UP -> CanonicalButton.BTN_UP
-            KeyEvent.KEYCODE_DPAD_DOWN -> CanonicalButton.BTN_DOWN
-            KeyEvent.KEYCODE_DPAD_LEFT -> CanonicalButton.BTN_LEFT
-            KeyEvent.KEYCODE_DPAD_RIGHT -> CanonicalButton.BTN_RIGHT
+            KeyEvent.KEYCODE_DPAD_UP -> dev.cannoli.igm.CanonicalButton.BTN_UP
+            KeyEvent.KEYCODE_DPAD_DOWN -> dev.cannoli.igm.CanonicalButton.BTN_DOWN
+            KeyEvent.KEYCODE_DPAD_LEFT -> dev.cannoli.igm.CanonicalButton.BTN_LEFT
+            KeyEvent.KEYCODE_DPAD_RIGHT -> dev.cannoli.igm.CanonicalButton.BTN_RIGHT
             else -> return emptyList()
         }
         return if (evaluator.currentlyPressed().contains(canonical)) listOf(canonical) else emptyList()
     }
 
-    private fun dispatchPressed(canonical: CanonicalButton, mapping: DeviceMapping): Boolean {
+    private fun dispatchPressed(canonical: dev.cannoli.igm.CanonicalButton, mapping: DeviceMapping): Boolean {
         when (canonical) {
-            CanonicalButton.BTN_UP -> onUp()
-            CanonicalButton.BTN_DOWN -> onDown()
-            CanonicalButton.BTN_LEFT -> onLeft()
-            CanonicalButton.BTN_RIGHT -> onRight()
-            CanonicalButton.BTN_EAST -> when {
-                mapping.menuConfirm == CanonicalButton.BTN_EAST -> onConfirm()
-                mapping.menuBack == CanonicalButton.BTN_EAST -> onBack()
+            dev.cannoli.igm.CanonicalButton.BTN_UP -> onUp()
+            dev.cannoli.igm.CanonicalButton.BTN_DOWN -> onDown()
+            dev.cannoli.igm.CanonicalButton.BTN_LEFT -> onLeft()
+            dev.cannoli.igm.CanonicalButton.BTN_RIGHT -> onRight()
+            dev.cannoli.igm.CanonicalButton.BTN_EAST -> when {
+                mapping.menuConfirm == dev.cannoli.igm.CanonicalButton.BTN_EAST -> onConfirm()
+                mapping.menuBack == dev.cannoli.igm.CanonicalButton.BTN_EAST -> onBack()
                 else -> return false
             }
-            CanonicalButton.BTN_SOUTH -> when {
-                mapping.menuConfirm == CanonicalButton.BTN_SOUTH -> onConfirm()
-                mapping.menuBack == CanonicalButton.BTN_SOUTH -> onBack()
+            dev.cannoli.igm.CanonicalButton.BTN_SOUTH -> when {
+                mapping.menuConfirm == dev.cannoli.igm.CanonicalButton.BTN_SOUTH -> onConfirm()
+                mapping.menuBack == dev.cannoli.igm.CanonicalButton.BTN_SOUTH -> onBack()
                 else -> return false
             }
-            CanonicalButton.BTN_WEST -> onWest()
-            CanonicalButton.BTN_NORTH -> onNorth()
-            CanonicalButton.BTN_L -> onL1()
-            CanonicalButton.BTN_R -> onR1()
-            CanonicalButton.BTN_L2 -> onL2()
-            CanonicalButton.BTN_R2 -> onR2()
-            CanonicalButton.BTN_L3 -> onL3()
-            CanonicalButton.BTN_R3 -> onR3()
-            CanonicalButton.BTN_START -> onStart()
-            CanonicalButton.BTN_SELECT -> onSelect()
-            CanonicalButton.BTN_MENU -> onMenu()
+            dev.cannoli.igm.CanonicalButton.BTN_WEST -> onWest()
+            dev.cannoli.igm.CanonicalButton.BTN_NORTH -> onNorth()
+            dev.cannoli.igm.CanonicalButton.BTN_L -> onL1()
+            dev.cannoli.igm.CanonicalButton.BTN_R -> onR1()
+            dev.cannoli.igm.CanonicalButton.BTN_L2 -> onL2()
+            dev.cannoli.igm.CanonicalButton.BTN_R2 -> onR2()
+            dev.cannoli.igm.CanonicalButton.BTN_L3 -> onL3()
+            dev.cannoli.igm.CanonicalButton.BTN_R3 -> onR3()
+            dev.cannoli.igm.CanonicalButton.BTN_START -> onStart()
+            dev.cannoli.igm.CanonicalButton.BTN_SELECT -> onSelect()
+            dev.cannoli.igm.CanonicalButton.BTN_MENU -> onMenu()
         }
         return true
     }
@@ -273,10 +272,10 @@ class InputDispatcher @Inject constructor(
 
     companion object {
         private val NAV_CANONICALS = setOf(
-            CanonicalButton.BTN_UP,
-            CanonicalButton.BTN_DOWN,
-            CanonicalButton.BTN_LEFT,
-            CanonicalButton.BTN_RIGHT,
+            dev.cannoli.igm.CanonicalButton.BTN_UP,
+            dev.cannoli.igm.CanonicalButton.BTN_DOWN,
+            dev.cannoli.igm.CanonicalButton.BTN_LEFT,
+            dev.cannoli.igm.CanonicalButton.BTN_RIGHT,
         )
     }
 }

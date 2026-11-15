@@ -1,6 +1,5 @@
 package dev.cannoli.scorza.input.resolver
 
-import dev.cannoli.scorza.input.CanonicalButton
 import dev.cannoli.scorza.input.ConnectedDevice
 import dev.cannoli.scorza.input.InputBinding
 import dev.cannoli.scorza.input.MappingSource
@@ -36,33 +35,81 @@ class AndroidDefaultMappingFactoryTest {
     @Test
     fun face_buttons_are_bound_to_standard_keycodes() {
         val t = AndroidDefaultMappingFactory.create(device, defaultHints)
-        assertEquals(InputBinding.Button(96), t.bindings[CanonicalButton.BTN_SOUTH]!![0])
-        assertEquals(InputBinding.Button(97), t.bindings[CanonicalButton.BTN_EAST]!![0])
-        assertEquals(InputBinding.Button(99), t.bindings[CanonicalButton.BTN_WEST]!![0])
-        assertEquals(InputBinding.Button(100), t.bindings[CanonicalButton.BTN_NORTH]!![0])
+        assertEquals(
+            InputBinding.Button(96),
+            t.bindings[dev.cannoli.igm.CanonicalButton.BTN_SOUTH]!![0]
+        )
+        assertEquals(
+            InputBinding.Button(97),
+            t.bindings[dev.cannoli.igm.CanonicalButton.BTN_EAST]!![0]
+        )
+        assertEquals(
+            InputBinding.Button(99),
+            t.bindings[dev.cannoli.igm.CanonicalButton.BTN_WEST]!![0]
+        )
+        assertEquals(
+            InputBinding.Button(100),
+            t.bindings[dev.cannoli.igm.CanonicalButton.BTN_NORTH]!![0]
+        )
     }
 
     @Test
     fun shoulders_triggers_thumbs_start_select_dpad_are_all_bound() {
         val t = AndroidDefaultMappingFactory.create(device, defaultHints)
-        assertEquals(InputBinding.Button(102), t.bindings[CanonicalButton.BTN_L]!![0])
-        assertEquals(InputBinding.Button(103), t.bindings[CanonicalButton.BTN_R]!![0])
-        assertEquals(InputBinding.Button(104), t.bindings[CanonicalButton.BTN_L2]!![0])
-        assertEquals(InputBinding.Button(105), t.bindings[CanonicalButton.BTN_R2]!![0])
-        assertEquals(InputBinding.Button(106), t.bindings[CanonicalButton.BTN_L3]!![0])
-        assertEquals(InputBinding.Button(107), t.bindings[CanonicalButton.BTN_R3]!![0])
-        assertEquals(InputBinding.Button(108), t.bindings[CanonicalButton.BTN_START]!![0])
-        assertEquals(InputBinding.Button(109), t.bindings[CanonicalButton.BTN_SELECT]!![0])
-        assertEquals(InputBinding.Button(19), t.bindings[CanonicalButton.BTN_UP]!![0])
-        assertEquals(InputBinding.Button(20), t.bindings[CanonicalButton.BTN_DOWN]!![0])
-        assertEquals(InputBinding.Button(21), t.bindings[CanonicalButton.BTN_LEFT]!![0])
-        assertEquals(InputBinding.Button(22), t.bindings[CanonicalButton.BTN_RIGHT]!![0])
+        assertEquals(
+            InputBinding.Button(102),
+            t.bindings[dev.cannoli.igm.CanonicalButton.BTN_L]!![0]
+        )
+        assertEquals(
+            InputBinding.Button(103),
+            t.bindings[dev.cannoli.igm.CanonicalButton.BTN_R]!![0]
+        )
+        assertEquals(
+            InputBinding.Button(104),
+            t.bindings[dev.cannoli.igm.CanonicalButton.BTN_L2]!![0]
+        )
+        assertEquals(
+            InputBinding.Button(105),
+            t.bindings[dev.cannoli.igm.CanonicalButton.BTN_R2]!![0]
+        )
+        assertEquals(
+            InputBinding.Button(106),
+            t.bindings[dev.cannoli.igm.CanonicalButton.BTN_L3]!![0]
+        )
+        assertEquals(
+            InputBinding.Button(107),
+            t.bindings[dev.cannoli.igm.CanonicalButton.BTN_R3]!![0]
+        )
+        assertEquals(
+            InputBinding.Button(108),
+            t.bindings[dev.cannoli.igm.CanonicalButton.BTN_START]!![0]
+        )
+        assertEquals(
+            InputBinding.Button(109),
+            t.bindings[dev.cannoli.igm.CanonicalButton.BTN_SELECT]!![0]
+        )
+        assertEquals(
+            InputBinding.Button(19),
+            t.bindings[dev.cannoli.igm.CanonicalButton.BTN_UP]!![0]
+        )
+        assertEquals(
+            InputBinding.Button(20),
+            t.bindings[dev.cannoli.igm.CanonicalButton.BTN_DOWN]!![0]
+        )
+        assertEquals(
+            InputBinding.Button(21),
+            t.bindings[dev.cannoli.igm.CanonicalButton.BTN_LEFT]!![0]
+        )
+        assertEquals(
+            InputBinding.Button(22),
+            t.bindings[dev.cannoli.igm.CanonicalButton.BTN_RIGHT]!![0]
+        )
     }
 
     @Test
     fun btn_menu_defaults_to_back_and_mode_keycodes() {
         val t = AndroidDefaultMappingFactory.create(device, defaultHints)
-        val menu = t.bindings[CanonicalButton.BTN_MENU].orEmpty()
+        val menu = t.bindings[dev.cannoli.igm.CanonicalButton.BTN_MENU].orEmpty()
         val keys = menu.filterIsInstance<dev.cannoli.scorza.input.InputBinding.Button>().map { it.keyCode }
         assertTrue(4 in keys)
         assertTrue(110 in keys)

@@ -57,41 +57,6 @@ class RaPreloadController @Inject constructor(
         }
     }
 
-    fun preloadBulk(roms: List<Rom>, onComplete: () -> Unit = {}) {
-        if (roms.isEmpty()) {
-            nav.dialogState.value = DialogState.None
-            return
-        }
-        if (!isOnline()) {
-            nav.dialogState.value = DialogState.RAPreloadResult(
-                success = false,
-                message = context.getString(dev.cannoli.scorza.R.string.ra_preload_failed),
-            )
-            return
-        }
-        ioScope.launch {
-            val cached = runCatching {
-                engine().preloadAll(client(), roms) { rom, i ->
-                    withContext(Dispatchers.Main) {
-                        if (!activityGone()) {
-                            nav.dialogState.value =
-                                DialogState.RAPreloadProgress("${rom.displayName} (${i + 1}/${roms.size})")
-                        }
-                    }
-                }
-            }.getOrDefault(0)
-            withContext(Dispatchers.Main) {
-                onComplete()
-                if (!activityGone()) {
-                    nav.dialogState.value = DialogState.RAPreloadResult(
-                        success = cached > 0,
-                        message = context.getString(dev.cannoli.scorza.R.string.ra_preload_bulk_done, cached, roms.size),
-                    )
-                }
-            }
-        }
-    }
-
     private fun engine() = RaPreloadEngine(
         store = RaOfflineStore(CannoliPaths(settings.sdCardRoot).configRaOffline),
         romsRepository = romsRepository,

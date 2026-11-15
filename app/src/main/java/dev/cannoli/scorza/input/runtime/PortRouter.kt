@@ -1,7 +1,6 @@
 package dev.cannoli.scorza.input.runtime
 
 import dev.cannoli.scorza.input.AnalogRole
-import dev.cannoli.scorza.input.CanonicalButton
 import dev.cannoli.scorza.input.ConnectedDevice
 import dev.cannoli.scorza.input.DeviceMapping
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -218,7 +217,7 @@ class PortRouter(private val maxPorts: Int = 4) {
     fun snapshotForPort(port: Int): PortSnapshot? =
         entries.values.firstOrNull { it.port == port }?.evaluator?.snapshot()
 
-    fun isCanonicalPressedAt(port: Int, button: CanonicalButton): Boolean {
+    fun isCanonicalPressedAt(port: Int, button: dev.cannoli.igm.CanonicalButton): Boolean {
         val entry = entries.values.firstOrNull { it.port == port } ?: return false
         return entry.evaluator.currentlyPressed().contains(button)
     }
