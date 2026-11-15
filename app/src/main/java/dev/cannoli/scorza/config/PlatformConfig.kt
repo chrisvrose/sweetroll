@@ -13,6 +13,7 @@ import dev.cannoli.core.IniData
 import dev.cannoli.core.IniParser
 import dev.cannoli.scorza.util.sortedNatural
 import org.json.JSONObject
+import timber.log.Timber
 import java.io.File
 
 class PlatformConfig(
@@ -113,7 +114,9 @@ class PlatformConfig(
         if (!coresFile.exists()) return
         try {
             val json = JSONObject(coresFile.readText())
-            if (json.optInt("v", 1) >= 2) loadV2(json) else migrateV1(json)
+            if (json.optInt("v", 1) >= 2) loadV2(json) else {
+                Timber.wtf("Json format v1: Removed support")
+            }
         } catch (e: java.io.IOException) {
             loadFailed = true
             dev.cannoli.scorza.util.ErrorLog.write("cores.json unreadable: ${e.message}")
@@ -142,37 +145,6 @@ class PlatformConfig(
         return EmulatorChoice(source = source, coreId = coreId, appPackage = app)
     }
 
-    // v1 stored the picker's display caption as the runner, so the source has to be recovered
-    // from it. An absent runner means v1 was re-deriving the source from the bundled .so on
-    // every read, so resolve it here the same way getRunnerLabel did.
-    private fun migrateV1(json: JSONObject) {
-        val cores = json.optJSONObject("cores")
-        val runners = json.optJSONObject("runners")
-        val apps = json.optJSONObject("apps")
-        val tags = buildSet {
-            cores?.keys()?.forEach { add(it) }
-            runners?.keys()?.forEach { add(it) }
-            apps?.keys()?.forEach { add(it) }
-        }
-        for (tag in tags) {
-            val coreId = cores?.optString(tag, "").orEmpty()
-            val app = apps?.optString(tag, "")?.ifEmpty { null }
-            legacyChoice(
-                runners?.optString(tag, "")?.ifEmpty { null }, app, coreId,
-                fallbackCoreId = defaultCores[tag.uppercase()],
-            )?.let { userChoices[tag] = it }
-        }
-        val overrides = json.optJSONObject("gameOverrides") ?: return
-        for (path in overrides.keys()) {
-            val obj = overrides.getJSONObject(path)
-            legacyChoice(
-                obj.optString("runner", "").ifEmpty { null },
-                obj.optString("app", "").ifEmpty { null },
-                obj.optString("core", ""),
-            )?.let { pendingV1Overrides[path] = it }
-        }
-    }
-
     /**
      * Moves v1 path-keyed overrides into the rom_id keyed table, then drops the section by
      * rewriting the file as v2.
@@ -195,30 +167,6 @@ class PlatformConfig(
         dev.cannoli.scorza.util.ErrorLog.write("migrated $moved v1 game overrides to the database")
         pendingV1Overrides.clear()
         saveCoreMappings()
-    }
-
-    internal fun legacyChoice(
-        runner: String?,
-        app: String?,
-        coreId: String,
-        fallbackCoreId: String? = null,
-    ): EmulatorChoice? {
-        val source = EmulatorSource.fromRunnerLabel(runner) ?: when {
-            app != null -> EmulatorSource.Standalone
-            coreId.isEmpty() && fallbackCoreId.isNullOrEmpty() -> return null
-            // v1 stored no runner here and re-derived the source from the bundled .so on every
-            // read, so resolve it the same way rather than guessing.
-            nativeLibDir != null && File(nativeLibDir, "${coreId}_android.so").exists() -> EmulatorSource.Internal
-            else -> EmulatorSource.RetroArch
-        }
-        if (source == EmulatorSource.Standalone) return EmulatorChoice(source, coreId, app)
-        // v1's setCoreMapping dropped the core when the pick equalled the platform default but
-        // still wrote the runner, so an Internal/RetroArch entry can arrive with no core at all.
-        // That is v1 saying "the default core", not "no core". Standalone is excluded above: its
-        // identity is the package, and stamping a core on it would misreport the mapping.
-        val resolved = coreId.ifEmpty { fallbackCoreId.orEmpty() }
-        if (resolved.isEmpty()) return null
-        return EmulatorChoice(source, resolved, app)
     }
 
     fun reloadCoreMappings() {
