@@ -42,15 +42,8 @@ class InGameMenuOptions(
         }
     }
 
-    val resumeIndex get() = actions.indexOf(IgmMenuAction.RESUME)
-    val saveStateIndex get() = actions.indexOf(IgmMenuAction.SAVE_STATE)
-    val loadStateIndex get() = actions.indexOf(IgmMenuAction.LOAD_STATE)
     val achievementsIndex get() = actions.indexOf(IgmMenuAction.ACHIEVEMENTS)
-    val guideIndex get() = actions.indexOf(IgmMenuAction.GUIDE)
     val cheatsIndex get() = actions.indexOf(IgmMenuAction.CHEATS)
-    val settingsIndex get() = actions.indexOf(IgmMenuAction.SETTINGS)
-    val switchDiscIndex get() = actions.indexOf(IgmMenuAction.SWITCH_DISC)
-    val reassignIndex get() = actions.indexOf(IgmMenuAction.REASSIGN)
     val resetIndex get() = actions.indexOf(IgmMenuAction.RESET)
     val quitIndex get() = actions.indexOf(IgmMenuAction.QUIT)
 

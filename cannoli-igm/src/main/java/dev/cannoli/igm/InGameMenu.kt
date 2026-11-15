@@ -10,14 +10,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -31,21 +29,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.cannoli.ui.ButtonStyle
-import dev.cannoli.ui.DPAD_HORIZONTAL
-import dev.cannoli.ui.components.BottomBar
-import dev.cannoli.ui.components.List
-import dev.cannoli.ui.components.PillRowKeyValue
-import dev.cannoli.ui.components.PillRowText
-import dev.cannoli.ui.components.ScreenBackground
-import dev.cannoli.ui.components.ScreenTitle
-import dev.cannoli.ui.components.footerReservation
-import dev.cannoli.ui.components.pillItemHeight
-import dev.cannoli.ui.components.pillVerticalPadding
-import dev.cannoli.ui.components.screenInsets
 import dev.cannoli.ui.theme.GrayText
 import dev.cannoli.ui.theme.PolaroidDark
 import dev.cannoli.ui.theme.PolaroidInactive
@@ -53,125 +38,6 @@ import dev.cannoli.ui.theme.PolaroidSelect
 import dev.cannoli.ui.theme.Radius
 import dev.cannoli.ui.theme.Spacing
 
-
-@Composable
-fun InGameMenu(
-    gameTitle: String,
-    menuOptions: InGameMenuOptions,
-    selectedIndex: Int,
-    selectedSlot: SaveSlotManager.Slot,
-    slotThumbnail: Bitmap?,
-    slotExists: Boolean,
-    slotOccupied: kotlin.collections.List<Boolean>,
-    undoLabel: String?,
-    backLabel: String,
-    deleteLabel: String,
-    slotLabel: String,
-    saveLabel: String,
-    loadLabel: String,
-    discLabel: String,
-    selectLabel: String,
-    fontSize: TextUnit = 22.sp,
-    lineHeight: TextUnit = 32.sp,
-    buttonStyle: ButtonStyle = ButtonStyle()
-) {
-    val verticalPadding = pillVerticalPadding()
-    val itemHeight = pillItemHeight(lineHeight, verticalPadding)
-    val showThumbnail = selectedIndex == menuOptions.saveStateIndex || selectedIndex == menuOptions.loadStateIndex
-    val onDiscRow = selectedIndex == menuOptions.switchDiscIndex
-
-    ScreenBackground(backgroundImagePath = null, backgroundAlpha = 0.85f, backgroundColor = Color.Black) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(screenInsets())
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(bottom = footerReservation())
-            ) {
-                ScreenTitle(
-                    text = gameTitle,
-                    fontSize = fontSize,
-                    lineHeight = lineHeight
-                )
-                Spacer(modifier = Modifier.height(Spacing.Sm))
-                Row(modifier = Modifier.fillMaxSize()) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .then(if (showThumbnail) Modifier.weight(0.4f) else Modifier.weight(1f))
-                    ) {
-                        List(
-                            items = menuOptions.options,
-                            selectedIndex = selectedIndex,
-                            itemHeight = itemHeight
-                        ) { index, option, isSelected ->
-                            if (index == menuOptions.switchDiscIndex) {
-                                PillRowKeyValue(
-                                    label = option,
-                                    value = menuOptions.discLabel,
-                                    isSelected = isSelected,
-                                    fontSize = fontSize,
-                                    lineHeight = lineHeight,
-                                    verticalPadding = verticalPadding
-                                )
-                            } else {
-                                PillRowText(
-                                    label = option,
-                                    isSelected = isSelected,
-                                    fontSize = fontSize,
-                                    lineHeight = lineHeight,
-                                    verticalPadding = verticalPadding
-                                )
-                            }
-                        }
-                    }
-
-                    if (showThumbnail) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .weight(0.6f)
-                                .padding(start = 16.dp),
-                            contentAlignment = Alignment.Center
-                        ) { Box(modifier = Modifier.widthIn(max = 280.dp)) {
-                            PolaroidFrame(
-                                thumbnail = slotThumbnail,
-                                selectedSlotIndex = selectedSlot.index,
-                                slotOccupied = slotOccupied
-                            )
-                        } }
-                    }
-                }
-            }
-
-            val canDeleteSlot = showThumbnail && slotExists
-            val onSlotRow = selectedIndex == menuOptions.saveStateIndex ||
-                selectedIndex == menuOptions.loadStateIndex
-            val leftItems = buildList {
-                add(buttonStyle.back to backLabel)
-                if (onDiscRow) add(DPAD_HORIZONTAL to discLabel)
-                if (onSlotRow) add(DPAD_HORIZONTAL to slotLabel)
-                if (undoLabel != null) add(buttonStyle.north to undoLabel.uppercase())
-                if (canDeleteSlot) add(buttonStyle.west to deleteLabel)
-            }
-            val rightItems = when {
-                selectedIndex == menuOptions.saveStateIndex -> listOf(buttonStyle.confirm to saveLabel)
-                selectedIndex == menuOptions.loadStateIndex -> listOf(buttonStyle.confirm to loadLabel)
-                onDiscRow -> listOf(buttonStyle.confirm to selectLabel)
-                else -> listOf(buttonStyle.confirm to selectLabel)
-            }
-
-            BottomBar(
-                modifier = Modifier.align(Alignment.BottomCenter),
-                leftItems = leftItems,
-                rightItems = rightItems
-            )
-        }
-    }
-}
 
 @Composable
 fun PolaroidFrame(
