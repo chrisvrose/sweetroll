@@ -373,6 +373,44 @@
     ]
   },
 
+  "STEAM": {
+    "name": "Steam",
+    "app": [
+      {
+        "package": "app.gamenative",
+        "activity": "app.gamenative.MainActivity",
+        "action": "app.gamenative.LAUNCH_GAME",
+        "extras": [
+          { "key": "app_id", "kind": "int", "value": "{rom_id}" },
+          {
+            "key": "game_source",
+            "kind": "string",
+            "value": "{rom_extension}",
+            "map": {
+              "steam": "STEAM",
+              "steamappid": "STEAM",
+              "epic": "EPIC",
+              "gog": "GOG",
+              "amazon": "AMAZON",
+              "pcgame": "CUSTOM_GAME"
+            }
+          }
+        ]
+      },
+      {
+        "package": "gamehub.lite",
+        "activity": "com.xj.landscape.launcher.ui.gamedetail.GameDetailActivity",
+        "action": "gamehub.lite.LAUNCH_GAME",
+        "extras": [
+          { "key": "steamAppId", "kind": "string", "value": "{rom_id}", "whenExtension": ["steam", "steamappid"] },
+          { "key": "localGameId", "kind": "string", "value": "{rom_id}", "whenExtension": ["localgameid", "txt"] },
+          { "key": "autoStartGame", "kind": "bool", "value": "true" }
+        ],
+        "intentFlags": 1342210048
+      }
+    ]
+  },
+
   "PS2": {
     "name": "PlayStation 2",
     "app": [
