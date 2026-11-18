@@ -20,7 +20,6 @@ import dev.cannoli.scorza.model.LaunchTarget
 import dev.cannoli.scorza.model.Rom
 import dev.cannoli.scorza.settings.SettingsRepository
 import dev.cannoli.scorza.ui.screens.DialogState
-import dev.cannoli.scorza.util.ArchiveExtractor
 import dev.cannoli.scorza.util.parseM3uDiscPaths
 import java.io.File
 import java.io.IOException
@@ -190,10 +189,7 @@ class LaunchManager(
         return digest.digest().joinToString("") { "%02x".format(it) }
     }
 
-    fun resolveLaunchFile(rom: Rom, extractArchives: Boolean): File? {
-        if (extractArchives && ArchiveExtractor.isArchive(rom.path) && !platformConfig.isArcade(rom.platformTag)) {
-            return ArchiveExtractor.extract(rom.path, context.cacheDir, rom.path.nameWithoutExtension)
-        }
+    fun resolveLaunchFile(rom: Rom): File {
         return rom.path
     }
 
@@ -231,10 +227,6 @@ class LaunchManager(
             // Slots are a Cannoli and libretro concept. A standalone app manages its own saves,
             // so offering Resume for one promises something no external emulator can honour.
             if (sourceFor(rom) == EmulatorSource.Standalone) continue
-            val target = rom.launchTarget
-            if (target is LaunchTarget.RetroArch && RetroArchLauncher.isRicotta(settings.retroArchPackage)) {
-                result.add(rom.path.absolutePath)
-            }
         }
         return result
     }
@@ -244,7 +236,7 @@ class LaunchManager(
         if (launchState.launching) return null
         launchState.launching = true
         launchState.lastLaunched = rom
-        val launchFile = resolveLaunchFile(rom, extractArchives = false)
+        val launchFile = resolveLaunchFile(rom)
             ?: return errorAndReset(DialogState.LaunchError(context.getString(dev.cannoli.scorza.R.string.launch_error_resolve_file)))
 
         val gameOverride = overrideFor(rom)
@@ -305,14 +297,8 @@ class LaunchManager(
                             val coreName = platformConfig.getCoreDisplayName(core)
                             return errorAndReset(DialogState.MissingCore(coreName, label, rom.platformTag, overrideRomId))
                         }
-                        if (RetroArchLauncher.isRicotta(raPackage)) {
-                            syncRetroArchConfig(File(settings.sdCardRoot))
-                            val launchConfig = buildGameConfig(rom) ?: raConfigPath
-                            retroArchLauncher.launchRicotta(launchFile, core, launchConfig, raPackage, buildRicottaIgm(rom))
-                        } else {
-                            val raConfig = "/storage/emulated/0/Android/data/$raPackage/files/retroarch.cfg"
-                            retroArchLauncher.launchRetroArchIntent(launchFile, core, raConfig, raPackage)
-                        }
+                        val raConfig = "/storage/emulated/0/Android/data/$raPackage/files/retroarch.cfg"
+                        retroArchLauncher.launchRetroArchIntent(launchFile, core, raConfig, raPackage)
                     } else {
                         // App-only platform (no core) that reached here has nothing installed to
                         // run it, so name the app it wants instead of a core it never had.
@@ -361,7 +347,7 @@ class LaunchManager(
         if (launchState.launching) return null
         launchState.launching = true
         launchState.lastLaunched = rom
-        val launchFile = resolveLaunchFile(rom, extractArchives = false)
+        val launchFile = resolveLaunchFile(rom)
             ?: run { launchState.launching = false; launchState.lastLaunched = null; return null }
         val gameOverride = overrideFor(rom)
         // Resume had no standalone branch, so a platform mapped to an uninstalled standalone app
@@ -401,14 +387,8 @@ class LaunchManager(
                 rom.platformTag, rom.id,
             ))
         }
-        val result = if (RetroArchLauncher.isRicotta(raPackage)) {
-            syncRetroArchConfig(File(settings.sdCardRoot))
-            val launchConfig = buildGameConfig(rom, resume = true, slot = resumeSlot) ?: raConfigPath
-            retroArchLauncher.launchRicotta(launchFile, core, launchConfig, raPackage, buildRicottaIgm(rom))
-        } else {
-            val raConfig = "/storage/emulated/0/Android/data/$raPackage/files/retroarch.cfg"
-            retroArchLauncher.launchRetroArchIntent(launchFile, core, raConfig, raPackage)
-        }
+        val raConfig = "/storage/emulated/0/Android/data/$raPackage/files/retroarch.cfg"
+        val result = retroArchLauncher.launchRetroArchIntent(launchFile, core, raConfig, raPackage)
         return launchResultDialog(result, rom.platformTag, rom.id)
     }
 
