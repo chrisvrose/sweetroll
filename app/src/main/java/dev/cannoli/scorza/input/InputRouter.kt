@@ -61,7 +61,6 @@ class InputRouter @Inject constructor(
     private val screenInputRegistry: dev.cannoli.scorza.input.runtime.ScreenInputRegistry,
     @ApplicationContext private val context: Context,
     private val settings: SettingsRepository,
-    private val coreInstaller: CoreInstaller,
     private val rommBrowseViewModel: dev.cannoli.scorza.ui.viewmodel.RommBrowseViewModel,
     private val rommDownloader: dev.cannoli.scorza.romm.download.RommDownloader,
     private val osdController: dev.cannoli.ui.components.OsdController,
@@ -341,9 +340,7 @@ class InputRouter @Inject constructor(
                         appPackage = opt.appPackage,
                     )
                     val id = romId
-                    if (item.downloadable) {
-                        downloadCoreThenAssign(this, opt.coreId)
-                    } else if (id != null) {
+                    if (id != null) {
                         gameOverrideStore.put(id, choice)
                         mappingChanged()
                         nav.pop()
@@ -696,34 +693,6 @@ class InputRouter @Inject constructor(
             nav.pop()
         },
     )
-
-    private fun downloadCoreThenAssign(screen: LauncherScreen.PlatformMapping, coreId: String) {
-        val pkg = settings.retroArchPackage
-        val coreName = platformConfig.getCoreDisplayName(coreId)
-        val romId = screen.romId
-        val before = if (romId != null) gameOverrideStore.get(romId) else platformConfig.getPlatformChoice(screen.tag)
-        val choice = dev.cannoli.scorza.config.EmulatorChoice(
-            source = dev.cannoli.scorza.config.EmulatorSource.RetroArch, coreId = coreId,
-        )
-        coreInstaller.downloadCore(pkg, coreId, coreName) {
-            // A download can land a couple of minutes later. Writing unconditionally would
-            // overwrite a newer explicit pick, which is exactly what the never-auto-change
-            // rule forbids, so bail if the selection moved while it ran.
-            val now = if (romId != null) gameOverrideStore.get(romId) else platformConfig.getPlatformChoice(screen.tag)
-            if (now != before) {
-                dev.cannoli.scorza.util.ErrorLog.write("core download finished after the selection changed, not assigning")
-                return@downloadCore
-            }
-            if (romId != null) gameOverrideStore.put(romId, choice)
-            else platformConfig.setPlatformChoice(screen.tag, choice)
-            mappingChanged()
-            val top = nav.currentScreen as? LauncherScreen.PlatformMapping
-            if (top != null && top.tag == screen.tag && top.romId == screen.romId) {
-                nav.replaceTop(emulatorMappingBuilder.rebuild(screen))
-            }
-            refreshEmulatorMappingOnStack()
-        }
-    }
 
     // Which emulator a game uses decides whether Resume is offered at all, so the resumable
     // set has to be recomputed on every mapping write. Without this the RESUME legend kept

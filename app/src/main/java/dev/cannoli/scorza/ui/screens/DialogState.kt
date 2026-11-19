@@ -27,7 +27,7 @@ sealed interface MappingItem {
     data class SectionHeader(val label: String) : MappingItem { override val isSelectable = false }
     data class Notice(val text: String) : MappingItem { override val isSelectable = false }
     data class Divider(val id: Int = 0) : MappingItem { override val isSelectable = false }
-    data class EmulatorOption(val option: EmulatorPickerOption, val isCurrent: Boolean, val downloadable: Boolean = false) : MappingItem {
+    data class EmulatorOption(val option: EmulatorPickerOption, val isCurrent: Boolean) : MappingItem {
         override val isSelectable = true
     }
     /** Game scope only: selecting this clears the per-game override and follows the platform. */

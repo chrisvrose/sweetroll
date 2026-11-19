@@ -150,8 +150,7 @@ class EmulatorMappingBuilder @Inject constructor(
                 }
                 options.forEach {
                     section.add(MappingItem.EmulatorOption(
-                        it, isCurrent(it),
-                        downloadable = false,
+                        it, isCurrent(it)
                     ))
                 }
             }
@@ -309,8 +308,7 @@ class EmulatorMappingBuilder @Inject constructor(
                 source = current.source, runnerLabel = label,
                 appPackage = current.appPackage, availability = availability,
             ),
-            isCurrent = true,
-            downloadable = false,
+            isCurrent = true
         )
     }
 

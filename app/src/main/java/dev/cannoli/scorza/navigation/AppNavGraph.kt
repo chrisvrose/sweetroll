@@ -68,6 +68,7 @@ import dev.cannoli.scorza.ui.screens.GuideViewerScreen
 import dev.cannoli.scorza.ui.screens.InputTesterScreen
 import dev.cannoli.scorza.ui.screens.LoggingSettingsScreen
 import dev.cannoli.scorza.ui.screens.KeyboardHost
+import dev.cannoli.scorza.ui.screens.MappingItem
 import dev.cannoli.scorza.ui.screens.PortraitMarginOverlay
 import dev.cannoli.scorza.ui.screens.SaveSlotsScreen
 import dev.cannoli.scorza.ui.screens.SaveStatePickerScreen
@@ -717,11 +718,7 @@ fun AppNavGraph(
                     stringResource(R.string.label_show_installed)
                 else
                     stringResource(R.string.label_show_all)
-                val highlighted = currentScreen.items.getOrNull(highlightedIndex)
-                val confirmLabel = if ((highlighted as? dev.cannoli.scorza.ui.screens.MappingItem.EmulatorOption)?.downloadable == true)
-                    stringResource(R.string.label_download)
-                else
-                    stringResource(R.string.label_select)
+                val confirmLabel = stringResource(R.string.label_select)
                 ListDialogScreen(
                     backgroundImagePath = appSettings.backgroundImagePath,
                     backgroundTint = appSettings.backgroundTint,
