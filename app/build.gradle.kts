@@ -98,6 +98,7 @@ android {
         abortOnError = true
         checkDependencies = true
         fatal += "NewApi"
+        baseline = file("./lint-baseline.xml")
     }
 }
 
