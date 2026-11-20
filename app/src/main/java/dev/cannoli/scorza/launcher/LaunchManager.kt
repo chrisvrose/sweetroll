@@ -2,17 +2,9 @@ package dev.cannoli.scorza.launcher
 
 import android.content.Context
 import android.content.pm.PackageManager
-import dev.cannoli.igm.BatteryDisplayMode
-import dev.cannoli.igm.CanonicalButton
-import dev.cannoli.igm.IgmColors
-import dev.cannoli.igm.IgmDisplaySettings
-import dev.cannoli.igm.TimeFormatMode
 import dev.cannoli.scorza.config.AppConfig
 import dev.cannoli.scorza.config.CannoliPaths
 import dev.cannoli.scorza.config.EmulatorSource
-import dev.cannoli.scorza.config.LaunchMethod
-import dev.cannoli.scorza.input.runtime.confirmButton
-import dev.cannoli.scorza.input.runtime.labelSet
 import dev.cannoli.scorza.config.PlatformConfig
 import dev.cannoli.scorza.libretro.SaveSlotManager
 import dev.cannoli.scorza.model.App
@@ -20,7 +12,6 @@ import dev.cannoli.scorza.model.LaunchTarget
 import dev.cannoli.scorza.model.Rom
 import dev.cannoli.scorza.settings.SettingsRepository
 import dev.cannoli.scorza.ui.screens.DialogState
-import dev.cannoli.scorza.util.parseM3uDiscPaths
 import java.io.File
 import java.io.IOException
 import java.security.MessageDigest
@@ -33,10 +24,7 @@ class LaunchManager(
     private val retroArchLauncher: RetroArchLauncher,
     private val emuLauncher: EmuLauncher,
     private val apkLauncher: ApkLauncher,
-    private val delfinoLauncher: DelfinoLauncher,
     private val launchState: LaunchState,
-    private val activeMappingHolder: dev.cannoli.scorza.input.runtime.ActiveMappingHolder,
-    private val atomicRename: dev.cannoli.scorza.util.AtomicRename,
     private val installedCoreService: InstalledCoreService? = null,
     private val gameOverrides: dev.cannoli.scorza.db.GameOverrideStore? = null,
 ) {
@@ -243,7 +231,7 @@ class LaunchManager(
         if (gameOverride?.source == EmulatorSource.Standalone && gameOverride.appPackage != null) {
             val cfg = platformConfig.getAppConfig(rom.platformTag, gameOverride.appPackage)
             return launchResultDialog(
-                launchStandalone(rom, launchFile, cfg), rom.platformTag, rom.id
+                launchStandalone(launchFile, cfg), rom.platformTag, rom.id
             )
         }
         val overrideRomId = if (gameOverride != null) rom.id else null
@@ -271,7 +259,7 @@ class LaunchManager(
                         ?: platformConfig.getFirstInstalledApp(rom.platformTag, context.packageManager)
                         ?: platformConfig.getAppPackage(rom.platformTag)?.let { platformConfig.getAppConfig(rom.platformTag, it) }
                     if (cfg != null) {
-                        launchStandalone(rom, launchFile, cfg)
+                        launchStandalone(launchFile, cfg)
                     } else {
                         LaunchResult.CoreNotInstalled("unknown")
                     }
@@ -359,7 +347,7 @@ class LaunchManager(
                     ?.let { platformConfig.getAppConfig(rom.platformTag, it) }
                 ?: platformConfig.getFirstInstalledApp(rom.platformTag, context.packageManager)
             return launchResultDialog(
-                if (cfg != null) launchStandalone(rom, launchFile, cfg)
+                if (cfg != null) launchStandalone(launchFile, cfg)
                 else LaunchResult.CoreNotInstalled("unknown"),
                 rom.platformTag, rom.id,
             )
@@ -438,95 +426,8 @@ class LaunchManager(
     private fun normalizedRomName(rom: Rom): String =
         Normalizer.normalize(rom.path.nameWithoutExtension, Normalizer.Form.NFC)
 
-    private fun launchStandalone(rom: Rom, launchFile: File, cfg: AppConfig): LaunchResult =
-        if (cfg.launchMethod == LaunchMethod.DELFINO) {
-            delfinoLauncher.launch(buildDelfinoParams(rom), cfg.packageName)
-        } else {
-            apkLauncher.launchWithRom(cfg.packageName, launchFile, cfg)
-        }
-
-    private fun buildDelfinoParams(rom: Rom): dev.cannoli.igm.DelfinoLaunchParams {
-        val igm = buildRicottaIgm(rom)
-        val paths = CannoliPaths(settings.sdCardRoot)
-        return dev.cannoli.igm.DelfinoLaunchParams(
-            romPath = rom.path.absolutePath,
-            cannoliRoot = paths.root.absolutePath,
-            savesDir = null,
-            saveStatesDir = null,
-            biosDir = paths.biosFor(rom.platformTag).absolutePath,
-            userDir = null,
-            gameTitle = rom.displayName,
-            platformTag = rom.platformTag,
-            igmTriggerKeycodes = igm.igmTriggerKeycodes,
-            colors = igm.colors,
-            displaySettings = igm.displaySettings,
-            inputMapping = igm.inputMapping,
-            discPaths = rom.path.takeIf { it.extension.equals("m3u", ignoreCase = true) }
-                ?.let(::parseM3uDiscPaths) ?: emptyList(),
-        )
-    }
-
-    private fun buildRicottaIgm(rom: Rom): RicottaIgm {
-        val paths = CannoliPaths(settings.sdCardRoot)
-        val romName = normalizedRomName(rom)
-        val stateBase = paths.saveStateBase(rom.platformTag, romName)
-        val batteryDisplay = when (settings.batteryDisplay) {
-            dev.cannoli.scorza.settings.BatteryDisplay.HIDE -> BatteryDisplayMode.HIDE
-            dev.cannoli.scorza.settings.BatteryDisplay.PERCENT -> BatteryDisplayMode.PERCENT
-            dev.cannoli.scorza.settings.BatteryDisplay.ICON -> BatteryDisplayMode.ICON
-        }
-        val timeFormat = when (settings.timeFormat) {
-            dev.cannoli.scorza.settings.TimeFormat.TWELVE_HOUR -> TimeFormatMode.TWELVE_HOUR
-            dev.cannoli.scorza.settings.TimeFormat.TWENTY_FOUR_HOUR -> TimeFormatMode.TWENTY_FOUR_HOUR
-        }
-        return RicottaIgm(
-            gameTitle = rom.displayName,
-            stateBasePath = stateBase.absolutePath,
-            cannoliRoot = paths.root.absolutePath,
-            platformTag = rom.platformTag,
-            platformName = platformConfig.getDisplayName(rom.platformTag),
-            igmTriggerKeycodes = resolveMenuKeycodes(),
-            colors = IgmColors(
-                highlight = settings.colorHighlight,
-                text = settings.colorText,
-                highlightText = settings.colorHighlightText,
-                accent = settings.colorAccent,
-                title = settings.colorTitle,
-            ),
-            displaySettings = IgmDisplaySettings(
-                fontSizeSp = settings.textSize.sp,
-                portraitMarginPx = settings.portraitMarginPx,
-                geometryWidthPct = settings.screenGeometryWidth,
-                geometryHeightPct = settings.screenGeometryHeight,
-                geometryXPct = settings.screenGeometryX,
-                geometryYPct = settings.screenGeometryY,
-                showWifi = settings.showWifi,
-                showBluetooth = settings.showBluetooth,
-                showVpn = settings.showVpn,
-                showClock = settings.showClock,
-                batteryDisplay = batteryDisplay,
-                timeFormat = timeFormat,
-                buttonLabelSet = activeMappingHolder.active.value.labelSet(dev.cannoli.ui.ButtonLabelSet.PLUMBER),
-                confirmButton = activeMappingHolder.active.value.confirmButton(),
-            ),
-            inputMapping = activeMappingHolder.active.value.toIgmInputMapping(),
-        )
-    }
-
-    // Keycodes bound to BTN_MENU in the active mapping open the Cannoli IGM in ricotta,
-    // mirroring how the launcher's own in-game menu opens. Falls back to the platform
-    // default (BACK + BUTTON_MODE) when no mapping is active.
-    private fun resolveMenuKeycodes(): List<Int> =
-        activeMappingHolder.active.value
-            ?.bindings
-            ?.get(CanonicalButton.BTN_MENU)
-            ?.filterIsInstance<dev.cannoli.scorza.input.InputBinding.Button>()
-            ?.map { it.keyCode }
-            ?.takeIf { it.isNotEmpty() }
-            ?: listOf(
-                android.view.KeyEvent.KEYCODE_BACK,
-                android.view.KeyEvent.KEYCODE_BUTTON_MODE,
-            )
+    private fun launchStandalone(launchFile: File, cfg: AppConfig): LaunchResult =
+        apkLauncher.launchWithRom(cfg.packageName, launchFile, cfg)
 
     companion object {
         private const val CONFIG_VERSION = 7

@@ -507,7 +507,6 @@ class PlatformConfig(
         "org.dolphinemu.dolphinemu" to "Dolphin",
         "org.dolphinemu.mmjr" to "Dolphin MMJR2",
         "dev.cannoli.delfino" to "Delfino",
-        "dev.cannoli.delfino.debug" to "Delfino (Debug)",
         "org.azahar_emu.azahar" to "Azahar",
         "info.cemu.cemu" to "Cemu",
         "org.vita3k.emulator" to "Vita3K",
@@ -683,7 +682,6 @@ class PlatformConfig(
         private fun parseLaunchMethod(s: String): LaunchMethod = when (s) {
             "intent" -> LaunchMethod.INTENT
             "shell" -> LaunchMethod.SHELL
-            "delfino" -> LaunchMethod.DELFINO
             else -> throw IllegalArgumentException("Unknown launchMethod: `$s`")
         }
     }

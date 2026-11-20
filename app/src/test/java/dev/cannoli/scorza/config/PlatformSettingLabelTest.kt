@@ -26,12 +26,6 @@ class PlatformSettingLabelTest {
         assertEquals("Dolphin MMJR2", label(pc, "GC"))
     }
 
-    @Test fun `a different standalone pick on the same platform is distinguished`() {
-        val pc = config()
-        pc.setPlatformChoice("GC", EmulatorChoice(EmulatorSource.Standalone, appPackage = "dev.cannoli.delfino"))
-        assertEquals("Delfino", label(pc, "GC"))
-    }
-
     @Test fun `standalone pick on a platform with a default core names the app not the core`() {
         val pc = config()
         pc.setPlatformChoice("NES", EmulatorChoice(EmulatorSource.Standalone, appPackage = "com.explusalpha.NesEmu"))

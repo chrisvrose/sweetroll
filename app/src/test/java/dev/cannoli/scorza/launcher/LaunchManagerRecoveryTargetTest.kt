@@ -54,10 +54,7 @@ class LaunchManagerRecoveryTargetTest {
             retroArchLauncher = retroArchLauncher,
             emuLauncher = mockk(relaxed = true),
             apkLauncher = apkLauncher,
-            delfinoLauncher = mockk(relaxed = true),
             launchState = mockk(relaxed = true),
-            activeMappingHolder = activeMappingHolder,
-            atomicRename = mockk(relaxed = true),
             installedCoreService = installedCoreService,
             gameOverrides = gameOverrides,
         )
