@@ -9,9 +9,6 @@ import dev.cannoli.scorza.config.PlatformConfig
 import dev.cannoli.scorza.db.CannoliDatabase
 import dev.cannoli.scorza.db.CollectionsRepository
 import dev.cannoli.scorza.db.ScanScheduler
-import dev.cannoli.scorza.db.importer.ImportProgress
-import dev.cannoli.scorza.db.importer.ImportResult
-import dev.cannoli.scorza.db.importer.Importer
 import dev.cannoli.scorza.di.CannoliPathsProvider
 import dev.cannoli.scorza.di.IoScope
 import dev.cannoli.scorza.input.BindingController
@@ -83,26 +80,6 @@ class BootInitializer @Inject constructor(
             launchManager.syncRetroArchConfig(root)
         }
         ioScope.launch { dev.cannoli.scorza.util.DirectoryLayout.ensure(root, romDir, context.assets, platformConfig) }
-
-        val importer = Importer(
-            context = context,
-            cannoliRoot = root,
-            romDirectory = romDir,
-            db = cannoliDatabase,
-            platformConfig = platformConfig,
-            scanScheduler = scanScheduler,
-            onProgress = { progress, label ->
-                onPhase(importPhase, progress, label)
-            },
-            scanDisk = settings.scanLibraryAutomatically,
-        )
-
-        val result = withContext(Dispatchers.IO) { importer.run() }
-
-        if (result is ImportResult.Failure) {
-            ScanLog.write("ERROR import returned Failure: ${result.cause.message}")
-            return BootResult.Failure(result.cause.message ?: context.getString(R.string.boot_import_failed))
-        }
 
         ioScope.launch {
             installedCoreService.queryAllPackages()

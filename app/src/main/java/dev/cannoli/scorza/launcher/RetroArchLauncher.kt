@@ -7,24 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.core.content.FileProvider
-import dev.cannoli.igm.IgmColors
-import dev.cannoli.igm.IgmDisplaySettings
-import dev.cannoli.igm.IgmInputMapping
 import java.io.File
-
-data class RicottaIgm(
-    val gameTitle: String,
-    val stateBasePath: String,
-    val cannoliRoot: String,
-    val platformTag: String,
-    val platformName: String,
-    val igmTriggerKeycodes: List<Int>,
-    val quitOnFocusLoss: Boolean = true,
-    val preferredRefreshRate: Int? = null,
-    val colors: IgmColors? = null,
-    val displaySettings: IgmDisplaySettings,
-    val inputMapping: IgmInputMapping? = null,
-)
 
 class RetroArchLauncher(
     private val context: Context,
