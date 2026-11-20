@@ -1,5 +1,6 @@
 package dev.cannoli.ui.components
 
+import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.content.BroadcastReceiver
 import android.content.Context
