@@ -73,7 +73,7 @@ class PlatformConfigStandaloneDisplayTest {
         val pc = config()
         pc.setPlatformChoice("NES", EmulatorChoice(EmulatorSource.RetroArch, "nestopia_libretro"))
         pc.resetPlatformToDefault(
-            "NES", ApplicationProvider.getApplicationContext<android.content.Context>().packageManager,
+            "NES",
         )
         pc.reloadCoreMappings()
         assertFalse(pc.hasUserMapping("NES"))

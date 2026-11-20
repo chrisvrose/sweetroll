@@ -210,38 +210,6 @@ class PlatformConfig(
         }
     }
 
-    /**
-     * Gives every platform Cannoli can serve itself an explicit mapping, so no screen has to
-     * fall back to a derived default.
-     *
-     * Only ever writes a platform that has no stored choice. It never overwrites, repairs or
-     * clears one, including when the stored core or app is no longer installed. Being idempotent
-     * it also backfills a platform that gains a bundled core in a later release, and recovers
-     * from a first run that was interrupted part way through.
-     */
-    fun seedUnsetPlatforms(pm: PackageManager): Int {
-        if (loadFailed) return 0
-        var written = 0
-        for (tag in getAllTags()) {
-            if (userChoices.containsKey(tag)) continue
-            val choice = seedFor(tag, pm) ?: continue
-            userChoices[tag] = choice
-            written++
-        }
-        if (written > 0) saveCoreMappings()
-        return written
-    }
-
-    private fun seedFor(tag: String, pm: PackageManager): EmulatorChoice? {
-        // Exactly one, never the first of several. Picking among several installed emulators is
-        // the silent-guess behavior this rework exists to remove.
-        val installed = getAppOptions(tag).filter { pm.isPackageInstalled(it.packageName) }
-        if (installed.size == 1) {
-            return EmulatorChoice(EmulatorSource.Standalone, appPackage = installed.single().packageName)
-        }
-        return null
-    }
-
     fun getPlatformChoice(tag: String): EmulatorChoice? = userChoices[tag]
 
     // Writes unconditionally. The old setCoreMapping dropped a pick that equalled the current
@@ -275,11 +243,9 @@ class PlatformConfig(
      * Resolves immediately rather than clearing and leaving the next boot's backfill to fill it
      * in, so what the user sees after confirming is the final state.
      */
-    fun resetPlatformToDefault(tag: String, pm: PackageManager): EmulatorChoice? {
-        val seeded = seedFor(tag, pm)
-        if (seeded == null) userChoices.remove(tag) else userChoices[tag] = seeded
+    fun resetPlatformToDefault(tag: String) {
+        userChoices.remove(tag)
         saveCoreMappings()
-        return seeded
     }
 
     fun hasUserMapping(tag: String): Boolean = userChoices.containsKey(tag)

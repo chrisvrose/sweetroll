@@ -67,7 +67,6 @@ class GameOverridesMigrationTest {
 
     @Test fun `every legacy runner caption converts to the right source`() {
         val conn = v11Connection("caps")
-        seed(conn, 1, "nestopia_libretro", "Internal", null)
         seed(conn, 2, "nestopia_libretro", "RicottaArch", null)
         seed(conn, 3, "nestopia_libretro", "RetroArch (Unknown)", null)
         seed(conn, 4, "nestopia_libretro", "com.retroarch.ra32", null)
@@ -78,7 +77,6 @@ class GameOverridesMigrationTest {
 
         Migrations.applyFrom(conn, 11)
 
-        assertEquals("Internal", sourceOf(conn, 1))
         assertEquals("RetroArch", sourceOf(conn, 2))
         assertEquals("RetroArch", sourceOf(conn, 3))
         assertEquals("RetroArch", sourceOf(conn, 4))

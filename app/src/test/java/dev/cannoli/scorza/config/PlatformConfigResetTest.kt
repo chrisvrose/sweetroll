@@ -1,7 +1,6 @@
 package dev.cannoli.scorza.config
 
 import androidx.test.core.app.ApplicationProvider
-import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -21,16 +20,10 @@ class PlatformConfigResetTest {
     // No bundled cores and no installed apps in this fixture, so the default resolves to
     // nothing and the platform is left unmapped.
     @Test fun `reset with no resolvable default leaves the platform unmapped`() {
-        val ctx = ApplicationProvider.getApplicationContext<android.content.Context>()
         val pc = config()
         pc.setPlatformChoice("NES", EmulatorChoice(EmulatorSource.RetroArch, "nestopia_libretro"))
         assertTrue(pc.hasUserMapping("NES"))
-        pc.resetPlatformToDefault("NES", ctx.packageManager)
+        pc.resetPlatformToDefault("NES")
         assertFalse(pc.hasUserMapping("NES"))
     }
-
-    // Per-game overrides moved out of PlatformConfig into the game_overrides table. The clearing
-    // and per-platform listing this file used to cover now live in GameOverrideStoreTest, against
-    // a real database, which additionally covers the delete cascade and the GB/GBA prefix case
-    // this path-keyed version could not reach.
 }
