@@ -336,7 +336,6 @@ class LaunchManager(
         launchState.launching = true
         launchState.lastLaunched = rom
         val launchFile = resolveLaunchFile(rom)
-            ?: run { launchState.launching = false; launchState.lastLaunched = null; return null }
         val gameOverride = overrideFor(rom)
         // Resume had no standalone branch, so a platform mapped to an uninstalled standalone app
         // fell straight through to the RetroArch path and launched the platform default core.
